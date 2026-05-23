@@ -104,15 +104,15 @@ struct CleanupSummaryScreen: View {
         .navigationTitle("Summary")
         .navigationBarTitleDisplayMode(.inline)
         .interactiveDismissDisabled(deletionState == .deleting)
-        .alert("Delete selected photos?", isPresented: $isShowingDeleteConfirmation) {
+        .alert("Delete selected items?", isPresented: $isShowingDeleteConfirmation) {
             Button("Cancel", role: .cancel) {
                 deletionState = .idle
             }
-            Button("Delete Photos", role: .destructive) {
+            Button("Delete Items", role: .destructive) {
                 deleteSelectedPhotos()
             }
         } message: {
-            Text("This will move \(summary.pendingDeletionCount) photos to Recently Deleted in your Photos library. You can recover them from Photos for a limited time.")
+            Text("This will move \(summary.pendingDeletionCount) items to Recently Deleted in your Photos library. You can recover them from Photos for a limited time.")
         }
     }
 
@@ -126,7 +126,7 @@ struct CleanupSummaryScreen: View {
                 .foregroundStyle(.secondary)
 
             if summary.pendingDeletionPhotos.isEmpty {
-                Text("No photos marked for deletion.")
+                Text("No items marked for deletion.")
                     .font(.callout)
                     .foregroundStyle(.secondary)
                     .frame(maxWidth: .infinity, alignment: .leading)
@@ -158,13 +158,13 @@ struct CleanupSummaryScreen: View {
         case .idle, .confirming:
             return nil
         case .deleting:
-            return "Deleting photos..."
+            return "Deleting items..."
         case .success(let result):
             if result.missingCount > 0 {
-                return "Moved \(result.deletedCount) photos to Recently Deleted. \(result.missingCount) photos were no longer available."
+                return "Moved \(result.deletedCount) items to Recently Deleted. \(result.missingCount) items were no longer available."
             }
 
-            return "Moved \(result.deletedCount) photos to Recently Deleted."
+            return "Moved \(result.deletedCount) items to Recently Deleted."
         case .failure(let message):
             return message
         }
@@ -315,6 +315,19 @@ private struct PendingDeletionThumbnail: View {
                 Image(systemName: photo.systemImageName)
                     .font(.title)
                     .foregroundStyle(.white)
+            }
+
+            if photo.mediaType == .video {
+                Label("Video", systemImage: "play.fill")
+                    .font(.caption2)
+                    .fontWeight(.semibold)
+                    .padding(.horizontal, 8)
+                    .padding(.vertical, 4)
+                    .foregroundStyle(.white)
+                    .background(.black.opacity(0.65))
+                    .clipShape(Capsule())
+                    .padding(6)
+                    .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topTrailing)
             }
         }
         .aspectRatio(1, contentMode: .fit)

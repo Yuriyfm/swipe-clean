@@ -26,8 +26,9 @@ struct PhotoLibraryService {
 
                 let fetchOptions = PHFetchOptions()
                 fetchOptions.predicate = NSPredicate(
-                    format: "mediaType == %d",
-                    PHAssetMediaType.image.rawValue
+                    format: "mediaType == %d OR mediaType == %d",
+                    PHAssetMediaType.image.rawValue,
+                    PHAssetMediaType.video.rawValue
                 )
                 fetchOptions.sortDescriptors = [
                     NSSortDescriptor(key: "creationDate", ascending: false)
@@ -38,14 +39,20 @@ struct PhotoLibraryService {
                 photos.reserveCapacity(assets.count)
 
                 assets.enumerateObjects { asset, _, _ in
+                    guard let mediaType = Self.mediaType(for: asset) else {
+                        return
+                    }
+
                     photos.append(
                         PhotoAsset(
                             id: asset.localIdentifier,
                             localIdentifier: asset.localIdentifier,
                             creationDate: asset.creationDate,
+                            mediaType: mediaType,
+                            duration: mediaType == .video ? asset.duration : nil,
                             title: Self.photoTitle(for: asset),
-                            systemImageName: "photo",
-                            placeholderColor: .blue.opacity(0.75)
+                            systemImageName: mediaType.systemImageName,
+                            placeholderColor: mediaType.placeholderColor
                         )
                     )
                 }
@@ -94,7 +101,7 @@ struct PhotoLibraryService {
 
     private static func photoTitle(for asset: PHAsset) -> String {
         guard let creationDate = asset.creationDate else {
-            return "Photo"
+            return asset.mediaType == .video ? "Video" : "Photo"
         }
 
         return DateFormatter.photoTitleFormatter.string(from: creationDate)
@@ -107,11 +114,42 @@ struct PhotoLibraryService {
 
         return DateFormatter().monthSymbols[month - 1]
     }
+
+    private static func mediaType(for asset: PHAsset) -> MediaType? {
+        switch asset.mediaType {
+        case .image:
+            return .image
+        case .video:
+            return .video
+        default:
+            return nil
+        }
+    }
 }
 
 private struct MonthKey: Hashable {
     let year: Int
     let month: Int
+}
+
+private extension MediaType {
+    var systemImageName: String {
+        switch self {
+        case .image:
+            return "photo"
+        case .video:
+            return "play.rectangle"
+        }
+    }
+
+    var placeholderColor: Color {
+        switch self {
+        case .image:
+            return .blue.opacity(0.75)
+        case .video:
+            return .purple.opacity(0.75)
+        }
+    }
 }
 
 private extension DateFormatter {

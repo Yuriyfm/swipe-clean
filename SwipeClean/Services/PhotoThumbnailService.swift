@@ -8,9 +8,9 @@ enum PhotoThumbnailServiceError: LocalizedError {
     var errorDescription: String? {
         switch self {
         case .assetNotFound:
-            return "Photo asset was not found."
+            return "Media item was not found."
         case .imageUnavailable:
-            return "Photo preview is unavailable."
+            return "Media preview is unavailable."
         }
     }
 }

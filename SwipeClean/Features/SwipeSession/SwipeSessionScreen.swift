@@ -64,6 +64,15 @@ struct SwipeSessionScreen: View {
 
             Spacer()
 
+            Button {
+                undoLastDecision()
+            } label: {
+                Label("Undo", systemImage: "arrow.uturn.backward")
+                    .font(.headline)
+            }
+            .buttonStyle(.bordered)
+            .disabled(!viewModel.canUndoLastDecision || isAnimatingCardOut)
+
             HStack(spacing: 16) {
                 Button {
                     completeCurrentPhoto(.keep, exitOffset: swipeThreshold * 3)
@@ -188,6 +197,16 @@ struct SwipeSessionScreen: View {
         }
     }
 
+    private func undoLastDecision() {
+        guard !isAnimatingCardOut else {
+            return
+        }
+
+        viewModel.undoLastDecision()
+        cardOffset = .zero
+        loadCurrentThumbnail()
+    }
+
     private func loadCurrentThumbnail() {
         guard let currentPhoto = viewModel.currentPhoto else {
             thumbnailViewModel.cancel()
@@ -281,10 +300,29 @@ private struct PhotoCard: View {
                 }
                 .foregroundStyle(.white)
             }
+
+            if photo.mediaType == .video {
+                MediaTypeBadge()
+                    .padding(12)
+                    .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topTrailing)
+            }
         }
         .aspectRatio(0.75, contentMode: .fit)
         .clipShape(RoundedRectangle(cornerRadius: 24))
         .shadow(radius: 12)
+    }
+}
+
+private struct MediaTypeBadge: View {
+    var body: some View {
+        Label("Video", systemImage: "play.fill")
+            .font(.caption)
+            .fontWeight(.semibold)
+            .padding(.horizontal, 10)
+            .padding(.vertical, 6)
+            .foregroundStyle(.white)
+            .background(.black.opacity(0.65))
+            .clipShape(Capsule())
     }
 }
 

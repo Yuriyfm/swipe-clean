@@ -33,11 +33,11 @@ final class PhotoLibraryPermissionViewModel: ObservableObject {
     var statusMessage: String {
         switch currentPermissionStatus {
         case .notDetermined:
-            return "SwipeClean needs photo access before cleanup can start. This task only requests permission; it does not load, modify, or delete photos."
+            return "SwipeClean needs photo access before cleanup can start. Permission does not delete or modify photos or videos."
         case .authorized:
-            return "You can continue to your photo months. This version loads only photo metadata and identifiers."
+            return "You can continue to your media months. This version loads only metadata and identifiers."
         case .limited:
-            return "You can continue with limited access. Only the photos you selected will appear."
+            return "You can continue with limited access. Only the photos and videos you selected will appear."
         case .denied:
             return "Photo access is needed to review your library. You can enable access later in iOS Settings."
         case .restricted:

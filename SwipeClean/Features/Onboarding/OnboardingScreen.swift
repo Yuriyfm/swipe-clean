@@ -17,12 +17,12 @@ struct OnboardingScreen: View {
                         .font(.largeTitle)
                         .fontWeight(.bold)
 
-                    Text("Review photos month by month. Keep the ones you want and mark unwanted photos for a later confirmation step.")
+                    Text("Review photos and videos month by month. Keep the ones you want and mark unwanted items for a later confirmation step.")
                         .font(.body)
                         .foregroundStyle(.secondary)
                         .multilineTextAlignment(.center)
 
-                    Text("SwipeClean needs photo library access so you can review photos by month. Permission does not delete or modify anything.")
+                    Text("SwipeClean needs photo library access so you can review photos and videos by month. Permission does not delete or modify anything.")
                         .font(.callout)
                         .foregroundStyle(.secondary)
                         .multilineTextAlignment(.center)

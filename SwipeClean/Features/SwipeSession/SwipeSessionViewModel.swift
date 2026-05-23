@@ -24,6 +24,10 @@ final class SwipeSessionViewModel: ObservableObject {
         decisions.count
     }
 
+    var canUndoLastDecision: Bool {
+        !decisions.isEmpty && !isSessionCompleted
+    }
+
     var keptCount: Int {
         decisions.filter { $0.action == .keep }.count
     }
@@ -70,6 +74,15 @@ final class SwipeSessionViewModel: ObservableObject {
 
     func markCurrentPhotoForDeletion() {
         recordDecision(.pendingDeletion)
+    }
+
+    func undoLastDecision() {
+        guard canUndoLastDecision else {
+            return
+        }
+
+        decisions.removeLast()
+        currentPhotoIndex = max(currentPhotoIndex - 1, 0)
     }
 
     func moveToNextPhoto() {

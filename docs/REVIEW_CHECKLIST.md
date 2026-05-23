@@ -10,12 +10,13 @@ Before accepting Codex changes:
 
 ## Safety
 
-- Are photos never deleted immediately after swipe?
+- Are photos and videos never deleted immediately after swipe?
 - Is deletion only possible after confirmation?
 - Is deletion triggered only from the summary screen after the final alert confirmation?
 - Is the deletion result shown to the user?
 - Does the month list refresh after successful deletion?
 - Are permission states handled?
+- Are videos shown as thumbnails without full-size media preloading?
 
 ## UX
 

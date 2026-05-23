@@ -34,9 +34,11 @@ enum MockPhotoLibrary {
                 id: "\(prefix)-photo-\(index)",
                 localIdentifier: "\(prefix)-photo-\(index)",
                 creationDate: nil,
-                title: "Mock Photo \(index)",
-                systemImageName: index.isMultiple(of: 2) ? "photo" : "camera",
-                placeholderColor: color.opacity(0.75)
+                mediaType: index.isMultiple(of: 5) ? .video : .image,
+                duration: index.isMultiple(of: 5) ? 42 : nil,
+                title: index.isMultiple(of: 5) ? "Mock Video \(index)" : "Mock Photo \(index)",
+                systemImageName: index.isMultiple(of: 5) ? "play.rectangle" : "photo",
+                placeholderColor: index.isMultiple(of: 5) ? .purple.opacity(0.75) : color.opacity(0.75)
             )
         }
     }

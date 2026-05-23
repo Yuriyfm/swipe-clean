@@ -15,18 +15,18 @@ struct MonthListScreen: View {
         Group {
             switch loadingState {
             case .idle, .loading:
-                ProgressView("Loading photo months...")
+                ProgressView("Loading media months...")
             case .loaded where months.isEmpty:
                 ContentUnavailableView(
-                    "No Photos Available",
+                    "No Media Available",
                     systemImage: "photo.on.rectangle",
-                    description: Text("SwipeClean could not find any accessible photos. If you granted limited access, add more photos in Settings.")
+                    description: Text("SwipeClean could not find any accessible photos or videos. If you granted limited access, add more items in Settings.")
                 )
             case .loaded:
                 monthList
             case .failed(let message):
                 ContentUnavailableView(
-                    "Could Not Load Photos",
+                    "Could Not Load Media",
                     systemImage: "exclamationmark.triangle",
                     description: Text(message)
                 )
@@ -107,7 +107,7 @@ private struct MonthRow: View {
                 Text(month.title)
                     .font(.headline)
 
-                Text("\(month.photoCount) accessible photos")
+                Text("\(month.photoCount) accessible items")
                     .font(.subheadline)
                     .foregroundStyle(.secondary)
             }

@@ -40,14 +40,15 @@ Goal: request Photo Library access and show the correct UI for each permission s
 
 Add the required privacy description to Info.plist. iOS requires apps to explain why they need access to the user's photos before the system permission dialog is shown.
 
-## Stage 3. Load photos grouped by month
+## Stage 3. Load media grouped by month
 
 Goal:
 
 - Fetch assets from PhotoKit
 - Group assets by year-month
 - Show a month list
-- Show photo count for each month
+- Show media item count for each month
+- Include photos and videos, but do not load full-size media during grouping
 
 There is still no deletion in this stage.
 
@@ -55,9 +56,10 @@ There is still no deletion in this stage.
 
 Goal:
 
-- Show photos one at a time
+- Show photos and videos one at a time
 - Swipe down = keep
 - Swipe up = mark as pending deletion
+- Videos are previewed as thumbnails, not played
 - Show progress
 - Store decisions in the current session state
 
@@ -67,12 +69,12 @@ There is still no deletion in this stage.
 
 Goal:
 
-- Show the number of photos marked for deletion
-- Show previews of selected photos
+- Show the number of media items marked for deletion
+- Show previews of selected photos and videos
 - Provide a Cancel button
 - Provide a Confirm Delete button
 
-This is the key safety screen. An upward swipe only marks a photo as pending deletion; the app must not request deletion before this confirmation step.
+This is the key safety screen. An upward swipe only marks a media item as pending deletion; the app must not request deletion before this confirmation step.
 
 ## Stage 6. Real deletion through PhotoKit
 
@@ -82,10 +84,10 @@ Goal:
 - Use a PhotoKit change request
 - Handle success and errors
 - Show the result to the user
-- After success, return to the month list and reload photo counts
+- After success, return to the month list and reload media item counts
 
 Apple performs Photo Library create, delete, and update operations through change requests. For this app, deletion must always happen through that system-controlled flow.
-Photos must never be deleted during swipe, when entering the summary screen, or in the background.
+Photos and videos must never be deleted during swipe, when entering the summary screen, or in the background.
 
 ## Stage 7. Simple gamification
 
