@@ -17,12 +17,16 @@ Before accepting Codex changes:
 - Does the month list refresh after successful deletion?
 - Are permission states handled?
 - Are videos shown as thumbnails without full-size media preloading?
+- Do all cleanup modes use the same final deletion confirmation flow?
+- Are gamification messages session-local and free of streaks, points, daily challenges, or push notifications?
 
 ## UX
 
 - Are loading states present?
 - Are empty states present?
 - Is there a clear cancel path?
+- Is session progress readable without relying only on color?
+- Does undo update reviewed count and progress correctly?
 
 ## Code
 

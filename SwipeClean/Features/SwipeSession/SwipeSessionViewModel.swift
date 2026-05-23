@@ -24,6 +24,18 @@ final class SwipeSessionViewModel: ObservableObject {
         decisions.count
     }
 
+    var totalCount: Int {
+        selectedMonth.photos.count
+    }
+
+    var progressFraction: Double {
+        guard totalCount > 0 else {
+            return 0
+        }
+
+        return Double(reviewedCount) / Double(totalCount)
+    }
+
     var canUndoLastDecision: Bool {
         !decisions.isEmpty && !isSessionCompleted
     }
@@ -51,16 +63,37 @@ final class SwipeSessionViewModel: ObservableObject {
     }
 
     var progressText: String {
-        guard !selectedMonth.photos.isEmpty else {
+        guard totalCount > 0 else {
             return "0 of 0"
         }
 
-        let visiblePhotoNumber = min(currentPhotoIndex + 1, selectedMonth.photos.count)
-        return "\(visiblePhotoNumber) of \(selectedMonth.photos.count)"
+        return "\(reviewedCount) of \(totalCount) reviewed"
+    }
+
+    var encouragementText: String {
+        guard totalCount > 0 else {
+            return "Ready to review"
+        }
+
+        if totalCount - reviewedCount <= 3 && reviewedCount > 0 {
+            return "Last few items"
+        }
+
+        switch progressFraction {
+        case 0:
+            return "Getting started"
+        case 0..<0.5:
+            return "Nice progress"
+        case 0..<0.85:
+            return "More than halfway"
+        default:
+            return "Almost done"
+        }
     }
 
     var summary: CleanupSummary {
         CleanupSummary(
+            sessionTitle: selectedMonth.title,
             reviewedCount: reviewedCount,
             keptCount: keptCount,
             pendingDeletionCount: pendingDeletionCount,

@@ -11,3 +11,4 @@ Photo deletion safety rules:
 9. App must not attempt to bypass iOS privacy controls.
 10. App must gracefully handle iCloud/unavailable assets.
 11. Videos are previewed as thumbnails unless explicit playback support is added later.
+12. Monthly Review, All Media, Screenshots, and Videos modes all use the same final confirmation deletion flow.

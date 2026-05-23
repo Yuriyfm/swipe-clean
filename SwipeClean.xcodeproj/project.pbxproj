@@ -21,6 +21,7 @@
 		10000000000000000000000C /* PhotoLibraryService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 10000000000000000000010C /* PhotoLibraryService.swift */; };
 		10000000000000000000000D /* PhotoThumbnailService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 10000000000000000000010D /* PhotoThumbnailService.swift */; };
 		10000000000000000000000E /* PhotoDeletionService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 10000000000000000000010E /* PhotoDeletionService.swift */; };
+		10000000000000000000000F /* CleanupModesScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 10000000000000000000010F /* CleanupModesScreen.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -38,6 +39,7 @@
 		10000000000000000000010C /* PhotoLibraryService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PhotoLibraryService.swift; sourceTree = "<group>"; };
 		10000000000000000000010D /* PhotoThumbnailService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PhotoThumbnailService.swift; sourceTree = "<group>"; };
 		10000000000000000000010E /* PhotoDeletionService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PhotoDeletionService.swift; sourceTree = "<group>"; };
+		10000000000000000000010F /* CleanupModesScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CleanupModesScreen.swift; sourceTree = "<group>"; };
 		100000000000000000000201 /* SwipeClean.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = SwipeClean.app; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
@@ -92,6 +94,7 @@
 			isa = PBXGroup;
 			children = (
 				100000000000000000000408 /* Onboarding */,
+				100000000000000000000414 /* CleanupModes */,
 				100000000000000000000409 /* MonthList */,
 				100000000000000000000410 /* SwipeSession */,
 				100000000000000000000411 /* CleanupSummary */,
@@ -169,6 +172,14 @@
 			path = Services;
 			sourceTree = "<group>";
 		};
+		100000000000000000000414 /* CleanupModes */ = {
+			isa = PBXGroup;
+			children = (
+				10000000000000000000010F /* CleanupModesScreen.swift */,
+			);
+			path = CleanupModes;
+			sourceTree = "<group>";
+		};
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
@@ -229,6 +240,7 @@
 				100000000000000000000001 /* SwipeCleanApp.swift in Sources */,
 				100000000000000000000002 /* OnboardingScreen.swift in Sources */,
 				10000000000000000000000B /* PhotoLibraryPermissionViewModel.swift in Sources */,
+				10000000000000000000000F /* CleanupModesScreen.swift in Sources */,
 				100000000000000000000003 /* MonthListScreen.swift in Sources */,
 				100000000000000000000004 /* SwipeSessionScreen.swift in Sources */,
 				10000000000000000000000A /* SwipeSessionViewModel.swift in Sources */,

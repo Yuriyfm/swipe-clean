@@ -19,14 +19,31 @@ struct SwipeSessionScreen: View {
 
     var body: some View {
         VStack(spacing: 24) {
-            VStack(spacing: 8) {
+            VStack(spacing: 10) {
                 Text(viewModel.selectedMonth.title)
                     .font(.title2)
                     .fontWeight(.semibold)
+                    .multilineTextAlignment(.center)
 
-                Text(viewModel.progressText)
-                    .font(.subheadline)
-                    .foregroundStyle(.secondary)
+                VStack(spacing: 6) {
+                    HStack {
+                        Text(viewModel.progressText)
+                            .font(.subheadline)
+                            .foregroundStyle(.secondary)
+
+                        Spacer()
+
+                        Text(viewModel.encouragementText)
+                            .font(.subheadline)
+                            .fontWeight(.semibold)
+                            .foregroundStyle(.blue)
+                    }
+
+                    ProgressView(value: viewModel.progressFraction)
+                        .progressViewStyle(.linear)
+                        .accessibilityLabel("Session progress")
+                        .accessibilityValue(viewModel.progressText)
+                }
             }
 
             Spacer()

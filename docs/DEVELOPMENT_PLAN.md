@@ -20,6 +20,7 @@ Goal: build navigation and screen structure without PhotoKit or real photos.
 Screens:
 
 - OnboardingScreen
+- CleanupModesScreen
 - MonthListScreen
 - SwipeSessionScreen
 - CleanupSummaryScreen
@@ -51,6 +52,18 @@ Goal:
 - Include photos and videos, but do not load full-size media during grouping
 
 There is still no deletion in this stage.
+
+## Stage 3.5. Cleanup modes
+
+Goal:
+
+- Let the user choose Monthly Review, All Media, Screenshots, or Videos.
+- Monthly Review uses the existing month list.
+- All Media starts one session with all available photos and videos.
+- Screenshots starts one session with image assets whose PhotoKit subtype is `photoScreenshot`.
+- Videos starts one session with video assets only.
+- All modes use the same swipe session, summary screen, final confirmation alert, and PhotoKit deletion service.
+- Videos are previewed as thumbnails, not played.
 
 ## Stage 4. Swipe session
 
@@ -91,15 +104,24 @@ Photos and videos must never be deleted during swipe, when entering the summary 
 
 ## Stage 7. Simple gamification
 
-Do not start with this stage. Add it only after the basic cleanup flow works.
+Goal: make cleanup sessions feel clearer and more rewarding without pressure mechanics.
 
-Ideas:
+Included:
 
 - Progress bar
-- Streak counter
-- Month completed state
-- "You reviewed 84 photos"
-- "You saved 120 MB" only if the app can calculate storage size correctly
+- Reviewed count and total count
+- Calm progress messages
+- Completion feedback on the summary screen
+- Session-local achievement-style messages
+
+Not included:
+
+- Persistent achievements
+- Streaks
+- Points
+- Daily challenges
+- Push notifications
+- "You saved 120 MB" unless the app can calculate storage size correctly later
 
 ## Stage 8. Polish
 

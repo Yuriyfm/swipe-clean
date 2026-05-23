@@ -2,6 +2,7 @@ import SwiftUI
 import UIKit
 
 struct CleanupSummary {
+    let sessionTitle: String
     let reviewedCount: Int
     let keptCount: Int
     let pendingDeletionCount: Int
@@ -27,15 +28,29 @@ struct CleanupSummaryScreen: View {
                             .font(.system(size: 56))
                             .foregroundStyle(.blue)
 
-                        Text("Review Complete")
+                        Text("Session complete")
                             .font(.largeTitle)
                             .fontWeight(.bold)
                             .multilineTextAlignment(.center)
 
-                        Text("Nothing has been deleted yet.")
+                        Text(summary.sessionTitle)
+                            .font(.headline)
+                            .foregroundStyle(.secondary)
+                            .multilineTextAlignment(.center)
+
+                        Text(completionMessage)
                             .font(.callout)
                             .foregroundStyle(.secondary)
                             .multilineTextAlignment(.center)
+
+                        Text(achievementMessage)
+                            .font(.subheadline)
+                            .fontWeight(.semibold)
+                            .foregroundStyle(.blue)
+                            .padding(.horizontal, 12)
+                            .padding(.vertical, 6)
+                            .background(Color.blue.opacity(0.12))
+                            .clipShape(Capsule())
                     }
 
                     VStack(spacing: 16) {
@@ -63,7 +78,7 @@ struct CleanupSummaryScreen: View {
                     Button {
                         onBackToMonths()
                     } label: {
-                        Text("Back to Months")
+                        Text("Done")
                             .font(.headline)
                             .frame(maxWidth: .infinity)
                     }
@@ -121,7 +136,7 @@ struct CleanupSummaryScreen: View {
             Text("Marked for deletion")
                 .font(.headline)
 
-            Text("You will confirm deletion in a later step.")
+            Text(summary.pendingDeletionPhotos.isEmpty ? "You kept everything in this session." : "Nothing has been deleted yet.")
                 .font(.callout)
                 .foregroundStyle(.secondary)
 
@@ -151,6 +166,26 @@ struct CleanupSummaryScreen: View {
 
     private var canConfirmDeletion: Bool {
         !summary.pendingDeletionPhotos.isEmpty && deletionState.allowsDeletion
+    }
+
+    private var completionMessage: String {
+        if summary.pendingDeletionCount == 0 {
+            return "You kept everything in this session."
+        }
+
+        return "Review selected items before deleting. Nothing has been deleted yet."
+    }
+
+    private var achievementMessage: String {
+        if summary.reviewedCount >= 50 {
+            return "Big review session"
+        }
+
+        if summary.pendingDeletionCount == 0 {
+            return "Clean sweep"
+        }
+
+        return "Ready for review"
     }
 
     private var statusMessage: String? {
@@ -345,6 +380,7 @@ private struct PendingDeletionThumbnail: View {
 #Preview {
     CleanupSummaryScreen(
         summary: CleanupSummary(
+            sessionTitle: "March 2024",
             reviewedCount: 12,
             keptCount: 8,
             pendingDeletionCount: 4,

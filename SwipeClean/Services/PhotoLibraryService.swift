@@ -15,7 +15,24 @@ enum PhotoLibraryServiceError: LocalizedError {
 
 struct PhotoLibraryService {
     func fetchMonthGroups() async throws -> [MonthGroup] {
-        try await withCheckedThrowingContinuation { (continuation: CheckedContinuation<[MonthGroup], Error>) in
+        let mediaItems = try await fetchMediaItems(kind: .allMedia)
+        return Self.groupPhotosByMonth(mediaItems)
+    }
+
+    func fetchAllMedia() async throws -> [PhotoAsset] {
+        try await fetchMediaItems(kind: .allMedia)
+    }
+
+    func fetchScreenshots() async throws -> [PhotoAsset] {
+        try await fetchMediaItems(kind: .screenshots)
+    }
+
+    func fetchVideos() async throws -> [PhotoAsset] {
+        try await fetchMediaItems(kind: .videos)
+    }
+
+    private func fetchMediaItems(kind: MediaFetchKind) async throws -> [PhotoAsset] {
+        try await withCheckedThrowingContinuation { (continuation: CheckedContinuation<[PhotoAsset], Error>) in
             DispatchQueue.global(qos: .userInitiated).async {
                 let status = PHPhotoLibrary.authorizationStatus(for: .readWrite)
 
@@ -25,25 +42,25 @@ struct PhotoLibraryService {
                 }
 
                 let fetchOptions = PHFetchOptions()
-                fetchOptions.predicate = NSPredicate(
-                    format: "mediaType == %d OR mediaType == %d",
-                    PHAssetMediaType.image.rawValue,
-                    PHAssetMediaType.video.rawValue
-                )
+                fetchOptions.predicate = kind.predicate
                 fetchOptions.sortDescriptors = [
                     NSSortDescriptor(key: "creationDate", ascending: false)
                 ]
 
                 let assets = PHAsset.fetchAssets(with: fetchOptions)
-                var photos: [PhotoAsset] = []
-                photos.reserveCapacity(assets.count)
+                var mediaItems: [PhotoAsset] = []
+                mediaItems.reserveCapacity(assets.count)
 
                 assets.enumerateObjects { asset, _, _ in
+                    guard kind.includes(asset) else {
+                        return
+                    }
+
                     guard let mediaType = Self.mediaType(for: asset) else {
                         return
                     }
 
-                    photos.append(
+                    mediaItems.append(
                         PhotoAsset(
                             id: asset.localIdentifier,
                             localIdentifier: asset.localIdentifier,
@@ -57,7 +74,7 @@ struct PhotoLibraryService {
                     )
                 }
 
-                continuation.resume(returning: Self.groupPhotosByMonth(photos))
+                continuation.resume(returning: mediaItems)
             }
         }
     }
@@ -130,6 +147,44 @@ struct PhotoLibraryService {
 private struct MonthKey: Hashable {
     let year: Int
     let month: Int
+}
+
+private enum MediaFetchKind {
+    case allMedia
+    case screenshots
+    case videos
+
+    var predicate: NSPredicate {
+        switch self {
+        case .allMedia:
+            return NSPredicate(
+                format: "mediaType == %d OR mediaType == %d",
+                PHAssetMediaType.image.rawValue,
+                PHAssetMediaType.video.rawValue
+            )
+        case .screenshots:
+            return NSPredicate(
+                format: "mediaType == %d",
+                PHAssetMediaType.image.rawValue
+            )
+        case .videos:
+            return NSPredicate(
+                format: "mediaType == %d",
+                PHAssetMediaType.video.rawValue
+            )
+        }
+    }
+
+    func includes(_ asset: PHAsset) -> Bool {
+        switch self {
+        case .allMedia:
+            return asset.mediaType == .image || asset.mediaType == .video
+        case .screenshots:
+            return asset.mediaType == .image && asset.mediaSubtypes.contains(.photoScreenshot)
+        case .videos:
+            return asset.mediaType == .video
+        }
+    }
 }
 
 private extension MediaType {
