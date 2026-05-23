@@ -44,7 +44,14 @@ struct MonthListScreen: View {
     private var monthList: some View {
         List(months) { month in
             NavigationLink {
-                SwipeSessionScreen(month: month)
+                SwipeSessionScreen(
+                    month: month,
+                    onDeletionCompleted: {
+                        Task {
+                            await loadMonths()
+                        }
+                    }
+                )
             } label: {
                 MonthRow(month: month)
             }

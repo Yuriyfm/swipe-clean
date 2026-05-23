@@ -19,6 +19,8 @@
 		10000000000000000000000A /* SwipeSessionViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 10000000000000000000010A /* SwipeSessionViewModel.swift */; };
 		10000000000000000000000B /* PhotoLibraryPermissionViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 10000000000000000000010B /* PhotoLibraryPermissionViewModel.swift */; };
 		10000000000000000000000C /* PhotoLibraryService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 10000000000000000000010C /* PhotoLibraryService.swift */; };
+		10000000000000000000000D /* PhotoThumbnailService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 10000000000000000000010D /* PhotoThumbnailService.swift */; };
+		10000000000000000000000E /* PhotoDeletionService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 10000000000000000000010E /* PhotoDeletionService.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -34,6 +36,8 @@
 		10000000000000000000010A /* SwipeSessionViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SwipeSessionViewModel.swift; sourceTree = "<group>"; };
 		10000000000000000000010B /* PhotoLibraryPermissionViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PhotoLibraryPermissionViewModel.swift; sourceTree = "<group>"; };
 		10000000000000000000010C /* PhotoLibraryService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PhotoLibraryService.swift; sourceTree = "<group>"; };
+		10000000000000000000010D /* PhotoThumbnailService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PhotoThumbnailService.swift; sourceTree = "<group>"; };
+		10000000000000000000010E /* PhotoDeletionService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PhotoDeletionService.swift; sourceTree = "<group>"; };
 		100000000000000000000201 /* SwipeClean.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = SwipeClean.app; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
@@ -159,6 +163,8 @@
 			isa = PBXGroup;
 			children = (
 				10000000000000000000010C /* PhotoLibraryService.swift */,
+				10000000000000000000010D /* PhotoThumbnailService.swift */,
+				10000000000000000000010E /* PhotoDeletionService.swift */,
 			);
 			path = Services;
 			sourceTree = "<group>";
@@ -228,6 +234,8 @@
 				10000000000000000000000A /* SwipeSessionViewModel.swift in Sources */,
 				100000000000000000000005 /* CleanupSummaryScreen.swift in Sources */,
 				10000000000000000000000C /* PhotoLibraryService.swift in Sources */,
+				10000000000000000000000D /* PhotoThumbnailService.swift in Sources */,
+				10000000000000000000000E /* PhotoDeletionService.swift in Sources */,
 				100000000000000000000006 /* MonthGroup.swift in Sources */,
 				100000000000000000000007 /* PhotoAsset.swift in Sources */,
 				100000000000000000000008 /* SwipeDecision.swift in Sources */,

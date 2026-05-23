@@ -32,6 +32,20 @@ final class SwipeSessionViewModel: ObservableObject {
         decisions.filter { $0.action == .pendingDeletion }.count
     }
 
+    var pendingDeletionPhotos: [PhotoAsset] {
+        let photosByID = Dictionary(
+            uniqueKeysWithValues: selectedMonth.photos.map { ($0.id, $0) }
+        )
+
+        return decisions.compactMap { decision in
+            guard decision.action == .pendingDeletion else {
+                return nil
+            }
+
+            return photosByID[decision.photoID]
+        }
+    }
+
     var progressText: String {
         guard !selectedMonth.photos.isEmpty else {
             return "0 of 0"
@@ -45,7 +59,8 @@ final class SwipeSessionViewModel: ObservableObject {
         CleanupSummary(
             reviewedCount: reviewedCount,
             keptCount: keptCount,
-            pendingDeletionCount: pendingDeletionCount
+            pendingDeletionCount: pendingDeletionCount,
+            pendingDeletionPhotos: pendingDeletionPhotos
         )
     }
 

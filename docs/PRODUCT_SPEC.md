@@ -15,9 +15,11 @@ Swipe-based photo cleanup app for iOS.
    - down = keep
    - up = mark for deletion
 7. App shows session summary.
-8. User confirms deletion.
-9. App requests system photo deletion.
-10. App shows result.
+8. User reviews photos marked for deletion.
+9. User taps Confirm Delete and confirms the final deletion alert.
+10. App requests system photo deletion through a PhotoKit change request.
+11. App shows result.
+12. After successful deletion, user returns to the refreshed month list.
 
 ## MVP scope
 

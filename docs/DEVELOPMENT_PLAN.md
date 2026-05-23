@@ -78,12 +78,14 @@ This is the key safety screen. An upward swipe only marks a photo as pending del
 
 Goal:
 
-- Run only after Confirm Delete
+- Run only after Confirm Delete and the final deletion alert confirmation
 - Use a PhotoKit change request
 - Handle success and errors
 - Show the result to the user
+- After success, return to the month list and reload photo counts
 
 Apple performs Photo Library create, delete, and update operations through change requests. For this app, deletion must always happen through that system-controlled flow.
+Photos must never be deleted during swipe, when entering the summary screen, or in the background.
 
 ## Stage 7. Simple gamification
 

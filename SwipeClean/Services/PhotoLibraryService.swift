@@ -15,7 +15,7 @@ enum PhotoLibraryServiceError: LocalizedError {
 
 struct PhotoLibraryService {
     func fetchMonthGroups() async throws -> [MonthGroup] {
-        try await withCheckedThrowingContinuation { continuation in
+        try await withCheckedThrowingContinuation { (continuation: CheckedContinuation<[MonthGroup], Error>) in
             DispatchQueue.global(qos: .userInitiated).async {
                 let status = PHPhotoLibrary.authorizationStatus(for: .readWrite)
 
@@ -74,7 +74,7 @@ struct PhotoLibraryService {
                 let monthName = monthName(for: key.month)
                 let title = key.year == 0 ? "Unknown Date" : "\(monthName) \(key.year)"
 
-                MonthGroup(
+                return MonthGroup(
                     id: "\(key.year)-\(String(format: "%02d", key.month))",
                     month: key.month,
                     name: monthName,

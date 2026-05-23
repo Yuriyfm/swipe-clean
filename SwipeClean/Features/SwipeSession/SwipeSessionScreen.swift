@@ -1,14 +1,19 @@
 import SwiftUI
+import UIKit
 
 struct SwipeSessionScreen: View {
     private let swipeThreshold: CGFloat = 120
+    private let onDeletionCompleted: () -> Void
 
+    @Environment(\.dismiss) private var dismiss
     @StateObject private var viewModel: SwipeSessionViewModel
+    @StateObject private var thumbnailViewModel = PhotoThumbnailViewModel()
     @State private var isShowingSummary = false
     @State private var cardOffset: CGSize = .zero
     @State private var isAnimatingCardOut = false
 
-    init(month: MonthGroup) {
+    init(month: MonthGroup, onDeletionCompleted: @escaping () -> Void = {}) {
+        self.onDeletionCompleted = onDeletionCompleted
         _viewModel = StateObject(wrappedValue: SwipeSessionViewModel(month: month))
     }
 
@@ -44,7 +49,10 @@ struct SwipeSessionScreen: View {
                     )
                     .frame(maxHeight: .infinity, alignment: .bottom)
 
-                    MockPhotoCard(photo: currentPhoto)
+                    PhotoCard(
+                        photo: currentPhoto,
+                        thumbnailState: thumbnailViewModel.state
+                    )
                         .offset(cardOffset)
                         .rotationEffect(.degrees(Double(cardOffset.height / 40)))
                         .scaleEffect(cardScale)
@@ -85,7 +93,26 @@ struct SwipeSessionScreen: View {
             }
         }
         .navigationDestination(isPresented: $isShowingSummary) {
-            CleanupSummaryScreen(summary: viewModel.summary)
+            CleanupSummaryScreen(
+                summary: viewModel.summary,
+                onBackToMonths: {
+                    onDeletionCompleted()
+                    isShowingSummary = false
+
+                    DispatchQueue.main.async {
+                        dismiss()
+                    }
+                }
+            )
+        }
+        .onChange(of: viewModel.currentPhoto?.id) { _, _ in
+            loadCurrentThumbnail()
+        }
+        .onAppear {
+            loadCurrentThumbnail()
+        }
+        .onDisappear {
+            thumbnailViewModel.cancel()
         }
     }
 
@@ -160,15 +187,90 @@ struct SwipeSessionScreen: View {
             isAnimatingCardOut = false
         }
     }
+
+    private func loadCurrentThumbnail() {
+        guard let currentPhoto = viewModel.currentPhoto else {
+            thumbnailViewModel.cancel()
+            return
+        }
+
+        thumbnailViewModel.loadThumbnail(for: currentPhoto)
+    }
 }
 
-private struct MockPhotoCard: View {
+private final class PhotoThumbnailViewModel: ObservableObject {
+    @Published private(set) var state: ThumbnailState = .idle
+
+    private let thumbnailService = PhotoThumbnailService()
+    private var requestedPhotoID: String?
+
+    func loadThumbnail(for photo: PhotoAsset) {
+        guard requestedPhotoID != photo.id else {
+            return
+        }
+
+        requestedPhotoID = photo.id
+        state = .loading
+
+        let screenScale = UIScreen.main.scale
+        let targetSize = CGSize(width: 900 * screenScale, height: 1200 * screenScale)
+
+        thumbnailService.requestThumbnail(
+            localIdentifier: photo.localIdentifier,
+            targetSize: targetSize
+        ) { [weak self] result in
+            DispatchQueue.main.async {
+                guard self?.requestedPhotoID == photo.id else {
+                    return
+                }
+
+                switch result {
+                case .success(let image):
+                    self?.state = .loaded(image)
+                case .failure:
+                    self?.state = .failed
+                }
+            }
+        }
+    }
+
+    func cancel() {
+        thumbnailService.cancelCurrentRequest()
+        requestedPhotoID = nil
+    }
+}
+
+private enum ThumbnailState {
+    case idle
+    case loading
+    case loaded(UIImage)
+    case failed
+}
+
+private struct PhotoCard: View {
     let photo: PhotoAsset
+    let thumbnailState: ThumbnailState
 
     var body: some View {
-        RoundedRectangle(cornerRadius: 24)
-            .fill(photo.placeholderColor)
-            .overlay {
+        ZStack {
+            RoundedRectangle(cornerRadius: 24)
+                .fill(photo.placeholderColor)
+
+            switch thumbnailState {
+            case .idle, .loading:
+                VStack(spacing: 16) {
+                    ProgressView()
+                        .tint(.white)
+
+                    Text("Loading Preview")
+                        .font(.headline)
+                }
+                .foregroundStyle(.white)
+            case .loaded(let image):
+                Image(uiImage: image)
+                    .resizable()
+                    .scaledToFit()
+            case .failed:
                 VStack(spacing: 16) {
                     Image(systemName: photo.systemImageName)
                         .font(.system(size: 72))
@@ -179,8 +281,10 @@ private struct MockPhotoCard: View {
                 }
                 .foregroundStyle(.white)
             }
-            .aspectRatio(0.75, contentMode: .fit)
-            .shadow(radius: 12)
+        }
+        .aspectRatio(0.75, contentMode: .fit)
+        .clipShape(RoundedRectangle(cornerRadius: 24))
+        .shadow(radius: 12)
     }
 }
 
