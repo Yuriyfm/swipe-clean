@@ -17,6 +17,8 @@
 		100000000000000000000008 /* SwipeDecision.swift in Sources */ = {isa = PBXBuildFile; fileRef = 100000000000000000000108 /* SwipeDecision.swift */; };
 		100000000000000000000009 /* MockPhotoLibrary.swift in Sources */ = {isa = PBXBuildFile; fileRef = 100000000000000000000109 /* MockPhotoLibrary.swift */; };
 		10000000000000000000000A /* SwipeSessionViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 10000000000000000000010A /* SwipeSessionViewModel.swift */; };
+		10000000000000000000000B /* PhotoLibraryPermissionViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 10000000000000000000010B /* PhotoLibraryPermissionViewModel.swift */; };
+		10000000000000000000000C /* PhotoLibraryService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 10000000000000000000010C /* PhotoLibraryService.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -30,6 +32,8 @@
 		100000000000000000000108 /* SwipeDecision.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SwipeDecision.swift; sourceTree = "<group>"; };
 		100000000000000000000109 /* MockPhotoLibrary.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MockPhotoLibrary.swift; sourceTree = "<group>"; };
 		10000000000000000000010A /* SwipeSessionViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SwipeSessionViewModel.swift; sourceTree = "<group>"; };
+		10000000000000000000010B /* PhotoLibraryPermissionViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PhotoLibraryPermissionViewModel.swift; sourceTree = "<group>"; };
+		10000000000000000000010C /* PhotoLibraryService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PhotoLibraryService.swift; sourceTree = "<group>"; };
 		100000000000000000000201 /* SwipeClean.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = SwipeClean.app; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
@@ -57,6 +61,7 @@
 			children = (
 				100000000000000000000404 /* App */,
 				100000000000000000000405 /* Features */,
+				100000000000000000000413 /* Services */,
 				100000000000000000000406 /* Models */,
 				100000000000000000000407 /* Shared */,
 			);
@@ -112,6 +117,7 @@
 			isa = PBXGroup;
 			children = (
 				100000000000000000000102 /* OnboardingScreen.swift */,
+				10000000000000000000010B /* PhotoLibraryPermissionViewModel.swift */,
 			);
 			path = Onboarding;
 			sourceTree = "<group>";
@@ -147,6 +153,14 @@
 				100000000000000000000109 /* MockPhotoLibrary.swift */,
 			);
 			path = MockData;
+			sourceTree = "<group>";
+		};
+		100000000000000000000413 /* Services */ = {
+			isa = PBXGroup;
+			children = (
+				10000000000000000000010C /* PhotoLibraryService.swift */,
+			);
+			path = Services;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -208,10 +222,12 @@
 			files = (
 				100000000000000000000001 /* SwipeCleanApp.swift in Sources */,
 				100000000000000000000002 /* OnboardingScreen.swift in Sources */,
+				10000000000000000000000B /* PhotoLibraryPermissionViewModel.swift in Sources */,
 				100000000000000000000003 /* MonthListScreen.swift in Sources */,
 				100000000000000000000004 /* SwipeSessionScreen.swift in Sources */,
 				10000000000000000000000A /* SwipeSessionViewModel.swift in Sources */,
 				100000000000000000000005 /* CleanupSummaryScreen.swift in Sources */,
+				10000000000000000000000C /* PhotoLibraryService.swift in Sources */,
 				100000000000000000000006 /* MonthGroup.swift in Sources */,
 				100000000000000000000007 /* PhotoAsset.swift in Sources */,
 				100000000000000000000008 /* SwipeDecision.swift in Sources */,
@@ -349,6 +365,7 @@
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
+				INFOPLIST_KEY_NSPhotoLibraryUsageDescription = "SwipeClean needs access to your photo library so you can review photos by month and choose which ones to keep or delete.";
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
@@ -377,6 +394,7 @@
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
+				INFOPLIST_KEY_NSPhotoLibraryUsageDescription = "SwipeClean needs access to your photo library so you can review photos by month and choose which ones to keep or delete.";
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";

@@ -15,7 +15,7 @@ struct SwipeSessionScreen: View {
     var body: some View {
         VStack(spacing: 24) {
             VStack(spacing: 8) {
-                Text("\(viewModel.selectedMonth.name) \(viewModel.selectedMonth.year)")
+                Text(viewModel.selectedMonth.title)
                     .font(.title2)
                     .fontWeight(.semibold)
 

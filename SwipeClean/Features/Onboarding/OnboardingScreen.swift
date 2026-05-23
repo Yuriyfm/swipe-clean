@@ -1,6 +1,8 @@
 import SwiftUI
 
 struct OnboardingScreen: View {
+    @StateObject private var permissionViewModel = PhotoLibraryPermissionViewModel()
+
     var body: some View {
         NavigationStack {
             VStack(spacing: 24) {
@@ -19,21 +21,54 @@ struct OnboardingScreen: View {
                         .font(.body)
                         .foregroundStyle(.secondary)
                         .multilineTextAlignment(.center)
+
+                    Text("SwipeClean needs photo library access so you can review photos by month. Permission does not delete or modify anything.")
+                        .font(.callout)
+                        .foregroundStyle(.secondary)
+                        .multilineTextAlignment(.center)
                 }
+
+                VStack(spacing: 8) {
+                    Text(permissionViewModel.statusTitle)
+                        .font(.headline)
+
+                    Text(permissionViewModel.statusMessage)
+                        .font(.callout)
+                        .foregroundStyle(.secondary)
+                        .multilineTextAlignment(.center)
+                }
+                .padding()
+                .frame(maxWidth: .infinity)
+                .background(Color(.secondarySystemBackground))
+                .clipShape(RoundedRectangle(cornerRadius: 8))
 
                 Spacer()
 
+                Button {
+                    permissionViewModel.requestAccess()
+                } label: {
+                    Text(permissionViewModel.requestButtonTitle)
+                        .font(.headline)
+                        .frame(maxWidth: .infinity)
+                }
+                .buttonStyle(.bordered)
+                .disabled(permissionViewModel.canContinue)
+
                 NavigationLink {
-                    MonthListScreen(months: MockPhotoLibrary.months)
+                    MonthListScreen()
                 } label: {
                     Text("Start Cleanup")
                         .font(.headline)
                         .frame(maxWidth: .infinity)
                 }
                 .buttonStyle(.borderedProminent)
+                .disabled(!permissionViewModel.canContinue)
             }
             .padding(24)
             .navigationTitle("Welcome")
+            .onAppear {
+                permissionViewModel.checkCurrentStatus()
+            }
         }
     }
 }
