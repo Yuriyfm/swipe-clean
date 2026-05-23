@@ -56,8 +56,8 @@ There is still no deletion in this stage.
 Goal:
 
 - Show photos one at a time
-- Swipe right = keep
-- Swipe left = mark as pending deletion
+- Swipe down = keep
+- Swipe up = mark as pending deletion
 - Show progress
 - Store decisions in the current session state
 
@@ -72,7 +72,7 @@ Goal:
 - Provide a Cancel button
 - Provide a Confirm Delete button
 
-This is the key safety screen. A left swipe only marks a photo as pending deletion; the app must not request deletion before this confirmation step.
+This is the key safety screen. An upward swipe only marks a photo as pending deletion; the app must not request deletion before this confirmation step.
 
 ## Stage 6. Real deletion through PhotoKit
 

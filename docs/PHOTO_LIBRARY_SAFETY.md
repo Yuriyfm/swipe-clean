@@ -1,7 +1,7 @@
 Photo deletion safety rules:
 
-1. Swipe left never deletes a photo.
-2. Swipe left only adds asset ID to pending deletion list.
+1. Swipe up never deletes a photo.
+2. Swipe up only adds asset ID to pending deletion list.
 3. User must see a confirmation screen before deletion.
 4. Confirmation screen must show count and preview of selected photos.
 5. Deletion must use PhotoKit change requests.

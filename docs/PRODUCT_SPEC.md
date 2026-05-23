@@ -12,8 +12,8 @@ Swipe-based photo cleanup app for iOS.
 4. User selects a month.
 5. App starts a swipe session.
 6. User swipes each photo:
-   - right = keep
-   - left = mark for deletion
+   - down = keep
+   - up = mark for deletion
 7. App shows session summary.
 8. User confirms deletion.
 9. App requests system photo deletion.

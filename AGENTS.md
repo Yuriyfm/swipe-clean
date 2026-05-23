@@ -19,7 +19,7 @@ When making iOS-specific decisions, explain them briefly in frontend-friendly te
 ## Core product rules
 
 - Never delete photos immediately after a swipe.
-- A left swipe only marks a photo as pending deletion.
+- An upward swipe only marks a photo as pending deletion.
 - Actual deletion must happen only after the final confirmation screen.
 - Prefer safe, reversible, user-confirmed flows.
 - Do not add third-party dependencies unless explicitly requested.

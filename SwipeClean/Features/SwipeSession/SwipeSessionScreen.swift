@@ -1,41 +1,56 @@
 import SwiftUI
 
 struct SwipeSessionScreen: View {
-    let month: MonthGroup
+    private let swipeThreshold: CGFloat = 120
 
-    @State private var currentIndex = 0
-    @State private var decisions: [SwipeDecision] = []
+    @StateObject private var viewModel: SwipeSessionViewModel
     @State private var isShowingSummary = false
+    @State private var cardOffset: CGSize = .zero
+    @State private var isAnimatingCardOut = false
 
-    private var currentPhoto: PhotoAsset? {
-        guard currentIndex < month.photos.count else {
-            return nil
-        }
-
-        return month.photos[currentIndex]
-    }
-
-    private var progressText: String {
-        let reviewedCount = min(currentIndex + 1, month.photos.count)
-        return "\(reviewedCount) of \(month.photos.count)"
+    init(month: MonthGroup) {
+        _viewModel = StateObject(wrappedValue: SwipeSessionViewModel(month: month))
     }
 
     var body: some View {
         VStack(spacing: 24) {
             VStack(spacing: 8) {
-                Text("\(month.name) \(month.year)")
+                Text("\(viewModel.selectedMonth.name) \(viewModel.selectedMonth.year)")
                     .font(.title2)
                     .fontWeight(.semibold)
 
-                Text(progressText)
+                Text(viewModel.progressText)
                     .font(.subheadline)
                     .foregroundStyle(.secondary)
             }
 
             Spacer()
 
-            if let currentPhoto {
-                MockPhotoCard(photo: currentPhoto)
+            if let currentPhoto = viewModel.currentPhoto {
+                ZStack {
+                    SwipeHintLabel(
+                        title: "Delete",
+                        systemImageName: "trash",
+                        color: .red,
+                        opacity: deleteHintOpacity
+                    )
+                    .frame(maxHeight: .infinity, alignment: .top)
+
+                    SwipeHintLabel(
+                        title: "Keep",
+                        systemImageName: "checkmark",
+                        color: .green,
+                        opacity: keepHintOpacity
+                    )
+                    .frame(maxHeight: .infinity, alignment: .bottom)
+
+                    MockPhotoCard(photo: currentPhoto)
+                        .offset(cardOffset)
+                        .rotationEffect(.degrees(Double(cardOffset.height / 40)))
+                        .scaleEffect(cardScale)
+                        .gesture(cardDragGesture)
+                        .animation(.spring(response: 0.28, dampingFraction: 0.82), value: cardOffset)
+                }
                     .transition(.opacity)
             }
 
@@ -43,7 +58,7 @@ struct SwipeSessionScreen: View {
 
             HStack(spacing: 16) {
                 Button {
-                    recordDecision(.keep)
+                    completeCurrentPhoto(.keep, exitOffset: swipeThreshold * 3)
                 } label: {
                     Label("Keep", systemImage: "checkmark")
                         .frame(maxWidth: .infinity)
@@ -52,7 +67,7 @@ struct SwipeSessionScreen: View {
                 .tint(.green)
 
                 Button {
-                    recordDecision(.pendingDeletion)
+                    completeCurrentPhoto(.pendingDeletion, exitOffset: -swipeThreshold * 3)
                 } label: {
                     Label("Delete", systemImage: "trash")
                         .frame(maxWidth: .infinity)
@@ -64,32 +79,85 @@ struct SwipeSessionScreen: View {
         .padding(24)
         .navigationTitle("Review")
         .navigationBarTitleDisplayMode(.inline)
+        .onChange(of: viewModel.isSessionCompleted) { _, isCompleted in
+            if isCompleted {
+                isShowingSummary = true
+            }
+        }
         .navigationDestination(isPresented: $isShowingSummary) {
-            CleanupSummaryScreen(summary: summary)
+            CleanupSummaryScreen(summary: viewModel.summary)
         }
     }
 
-    private var summary: CleanupSummary {
-        CleanupSummary(
-            reviewedCount: decisions.count,
-            keptCount: decisions.filter { $0.action == .keep }.count,
-            pendingDeletionCount: decisions.filter { $0.action == .pendingDeletion }.count
-        )
+    private var cardDragGesture: some Gesture {
+        DragGesture()
+            .onChanged { value in
+                guard !isAnimatingCardOut else {
+                    return
+                }
+
+                cardOffset = CGSize(width: 0, height: value.translation.height)
+            }
+            .onEnded { value in
+                guard !isAnimatingCardOut else {
+                    return
+                }
+
+                handleDragEnd(value)
+            }
     }
 
-    private func recordDecision(_ action: SwipeAction) {
-        guard let currentPhoto else {
+    private var cardScale: CGFloat {
+        let dragProgress = min(abs(cardOffset.height) / 600, 0.04)
+        return 1 - dragProgress
+    }
+
+    private var deleteHintOpacity: Double {
+        min(max(Double(-cardOffset.height / swipeThreshold), 0), 1)
+    }
+
+    private var keepHintOpacity: Double {
+        min(max(Double(cardOffset.height / swipeThreshold), 0), 1)
+    }
+
+    private func handleDragEnd(_ value: DragGesture.Value) {
+        let verticalDistance = value.translation.height
+        let horizontalDistance = abs(value.translation.width)
+
+        guard abs(verticalDistance) >= swipeThreshold,
+              abs(verticalDistance) > horizontalDistance else {
+            cardOffset = .zero
             return
         }
 
-        decisions.append(
-            SwipeDecision(photoID: currentPhoto.id, action: action)
-        )
-
-        if currentIndex + 1 >= month.photos.count {
-            isShowingSummary = true
+        if verticalDistance < 0 {
+            completeCurrentPhoto(.pendingDeletion, exitOffset: -swipeThreshold * 3)
         } else {
-            currentIndex += 1
+            completeCurrentPhoto(.keep, exitOffset: swipeThreshold * 3)
+        }
+    }
+
+    private func completeCurrentPhoto(_ action: SwipeAction, exitOffset: CGFloat) {
+        guard !isAnimatingCardOut else {
+            return
+        }
+
+        isAnimatingCardOut = true
+
+        withAnimation(.easeIn(duration: 0.18)) {
+            cardOffset = CGSize(width: 0, height: exitOffset)
+        }
+
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.18) {
+            switch action {
+            case .keep:
+                viewModel.keepCurrentPhoto()
+            case .pendingDeletion:
+                viewModel.markCurrentPhotoForDeletion()
+            }
+
+            cardOffset = .zero
+            isAnimatingCardOut = false
         }
     }
 }
@@ -113,6 +181,24 @@ private struct MockPhotoCard: View {
             }
             .aspectRatio(0.75, contentMode: .fit)
             .shadow(radius: 12)
+    }
+}
+
+private struct SwipeHintLabel: View {
+    let title: String
+    let systemImageName: String
+    let color: Color
+    let opacity: Double
+
+    var body: some View {
+        Label(title, systemImage: systemImageName)
+            .font(.headline)
+            .foregroundStyle(color)
+            .padding(.horizontal, 16)
+            .padding(.vertical, 10)
+            .background(color.opacity(0.12))
+            .clipShape(Capsule())
+            .opacity(opacity)
     }
 }
 
