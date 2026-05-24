@@ -1,5 +1,8 @@
 # Development Plan
 
+> Read this only for roadmap, milestone planning, or when deciding what stage a task belongs to.
+> For implementation details, prefer `PRODUCT_SPEC.md`, `PHOTO_LIBRARY_SAFETY.md`, or `ARCHITECTURE.md`.
+
 ## Stage 0. Environment setup
 
 Goal: the project opens in Xcode and runs in the iOS simulator.

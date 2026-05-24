@@ -118,6 +118,14 @@ final class SwipeSessionViewModel: ObservableObject {
         currentPhotoIndex = max(currentPhotoIndex - 1, 0)
     }
 
+    func finishReview() {
+        guard !isSessionCompleted else {
+            return
+        }
+
+        isSessionCompleted = true
+    }
+
     func moveToNextPhoto() {
         if currentPhotoIndex + 1 >= selectedMonth.photos.count {
             isSessionCompleted = true

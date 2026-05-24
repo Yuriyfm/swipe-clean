@@ -1,5 +1,8 @@
 # Product Spec
 
+> Read this for product behavior, user flows, MVP scope, localization, appearance, and empty states.
+> Do not reread this for tasks that only touch tests, build settings, or internal refactors.
+
 ## App idea
 
 Swipe-based photo and video cleanup app for iOS.

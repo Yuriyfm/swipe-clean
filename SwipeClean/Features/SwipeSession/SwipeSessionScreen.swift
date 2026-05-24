@@ -4,6 +4,7 @@ import UIKit
 struct SwipeSessionScreen: View {
     private let swipeThreshold: CGFloat = 120
     private let onDeletionCompleted: () -> Void
+    private let onSessionCancelled: () -> Void
 
     @Environment(\.dismiss) private var dismiss
     @StateObject private var viewModel: SwipeSessionViewModel
@@ -11,127 +12,182 @@ struct SwipeSessionScreen: View {
     @State private var isShowingSummary = false
     @State private var cardOffset: CGSize = .zero
     @State private var isAnimatingCardOut = false
+    @State private var isPhotoFullscreen = false
+    @State private var isCompletingDeletedSession = false
 
-    init(month: MonthGroup, onDeletionCompleted: @escaping () -> Void = {}) {
+    init(
+        month: MonthGroup,
+        onDeletionCompleted: @escaping () -> Void = {},
+        onSessionCancelled: @escaping () -> Void = {}
+    ) {
         self.onDeletionCompleted = onDeletionCompleted
+        self.onSessionCancelled = onSessionCancelled
         _viewModel = StateObject(wrappedValue: SwipeSessionViewModel(month: month))
     }
 
     var body: some View {
-        VStack(spacing: 24) {
-            VStack(spacing: 10) {
-                Text(viewModel.selectedMonth.title)
-                    .font(.title2)
-                    .fontWeight(.semibold)
-                    .multilineTextAlignment(.center)
+        ZStack {
+            VStack(spacing: 24) {
+                VStack(spacing: 10) {
+                    Text(viewModel.selectedMonth.title)
+                        .font(.title2)
+                        .fontWeight(.semibold)
+                        .multilineTextAlignment(.center)
 
-                VStack(spacing: 6) {
-                    HStack {
-                        Text(viewModel.progressText)
-                            .font(.subheadline)
-                            .foregroundStyle(.primary)
+                    VStack(spacing: 6) {
+                        HStack {
+                            Text(viewModel.progressText)
+                                .font(.subheadline)
+                                .foregroundStyle(.primary)
 
-                        Spacer()
+                            Spacer()
 
-                        Text(viewModel.encouragementText)
-                            .font(.subheadline)
-                            .fontWeight(.semibold)
-                            .foregroundStyle(.primary)
+                            Text(viewModel.encouragementText)
+                                .font(.subheadline)
+                                .fontWeight(.semibold)
+                                .foregroundStyle(.primary)
+                        }
+
+                        ProgressView(value: viewModel.progressFraction)
+                            .progressViewStyle(.linear)
+                            .accessibilityLabel("Session progress")
+                            .accessibilityValue(viewModel.progressText)
+
+                        ZStack {
+                            HStack {
+                                Text(pendingDeletionCounterText)
+                                    .font(.footnote)
+                                    .fontWeight(.semibold)
+                                    .foregroundStyle(.primary)
+                                    .padding(.horizontal, 10)
+                                    .padding(.vertical, 6)
+                                    .background(deleteColor.opacity(0.12))
+                                    .clipShape(Capsule())
+
+                                Spacer()
+                            }
+
+                            Image(systemName: "trash.fill")
+                                .font(.title3)
+                                .fontWeight(.semibold)
+                                .foregroundStyle(deleteColor)
+                                .padding(10)
+                                .background(deleteColor.opacity(0.12))
+                                .clipShape(Circle())
+                                .accessibilityElement(children: .ignore)
+                                .accessibilityLabel(L10n.string("Swipe up marks photo for deletion"))
+                        }
                     }
-
-                    ProgressView(value: viewModel.progressFraction)
-                        .progressViewStyle(.linear)
-                        .accessibilityLabel("Session progress")
-                        .accessibilityValue(viewModel.progressText)
                 }
-            }
+                .zIndex(1)
 
-            Spacer()
+                Spacer()
 
-            if let currentPhoto = viewModel.currentPhoto {
-                ZStack {
-                    SwipeHintLabel(
-                        title: "Delete",
-                        systemImageName: "trash",
-                        color: deleteColor,
-                        opacity: deleteHintOpacity
-                    )
-                    .frame(maxHeight: .infinity, alignment: .top)
+                if let currentPhoto = viewModel.currentPhoto {
+                    ZStack {
+                        SwipeHintLabel(
+                            title: "Keep",
+                            systemImageName: "checkmark",
+                            color: keepColor,
+                            opacity: keepHintOpacity
+                        )
+                        .frame(maxHeight: .infinity, alignment: .bottom)
 
-                    SwipeHintLabel(
-                        title: "Keep",
-                        systemImageName: "checkmark",
-                        color: keepColor,
-                        opacity: keepHintOpacity
-                    )
-                    .frame(maxHeight: .infinity, alignment: .bottom)
-
-                    PhotoCard(
-                        photo: currentPhoto,
-                        thumbnailState: thumbnailViewModel.state
-                    )
+                        PhotoCard(
+                            photo: currentPhoto,
+                            thumbnailState: thumbnailViewModel.state
+                        )
                         .offset(cardOffset)
                         .rotationEffect(.degrees(Double(cardOffset.height / 40)))
                         .scaleEffect(cardScale)
                         .gesture(cardDragGesture)
+                        .onTapGesture {
+                            withAnimation(.spring(response: 0.32, dampingFraction: 0.86)) {
+                                isPhotoFullscreen = true
+                            }
+                        }
                         .animation(.spring(response: 0.28, dampingFraction: 0.82), value: cardOffset)
+                    }
+                    .frame(height: 420)
+                    .transition(.opacity)
+                    .zIndex(0)
+                } else if viewModel.totalCount == 0 {
+                    VStack(spacing: 12) {
+                        Image(systemName: "photo.on.rectangle")
+                            .font(.system(size: 48))
+                            .foregroundStyle(Color.accentColor)
+
+                        Text("No Items to Review")
+                            .font(.title2)
+                            .fontWeight(.semibold)
+
+                        Text("This session does not contain any accessible media.")
+                            .font(.callout)
+                            .foregroundStyle(.primary)
+                            .multilineTextAlignment(.center)
+                    }
                 }
-                .frame(height: 420)
-                .transition(.opacity)
-            } else if viewModel.totalCount == 0 {
-                VStack(spacing: 12) {
-                    Image(systemName: "photo.on.rectangle")
-                        .font(.system(size: 48))
-                        .foregroundStyle(Color.accentColor)
 
-                    Text("No Items to Review")
-                        .font(.title2)
-                        .fontWeight(.semibold)
-
-                    Text("This session does not contain any accessible media.")
-                        .font(.callout)
-                        .foregroundStyle(.primary)
-                        .multilineTextAlignment(.center)
-                }
-            }
-
-            Spacer()
-
-            Button {
-                undoLastDecision()
-            } label: {
-                Label("Undo", systemImage: "arrow.uturn.backward")
-                    .font(.headline)
-            }
-            .buttonStyle(.bordered)
-            .disabled(!viewModel.canUndoLastDecision || isAnimatingCardOut)
-
-            HStack(spacing: 16) {
-                Button {
-                    completeCurrentPhoto(.keep, exitOffset: swipeThreshold * 3)
-                } label: {
-                    Label("Keep", systemImage: "checkmark")
-                        .frame(maxWidth: .infinity)
-                }
-                .buttonStyle(.borderedProminent)
-                .tint(keepColor)
-                .disabled(viewModel.currentPhoto == nil || isAnimatingCardOut)
+                Spacer()
 
                 Button {
-                    completeCurrentPhoto(.pendingDeletion, exitOffset: -swipeThreshold * 3)
+                    undoLastDecision()
                 } label: {
-                    Label("Delete", systemImage: "trash")
-                        .frame(maxWidth: .infinity)
+                    Label("Undo", systemImage: "arrow.uturn.backward")
+                        .font(.headline)
                 }
-                .buttonStyle(.borderedProminent)
-                .tint(deleteColor)
-                .disabled(viewModel.currentPhoto == nil || isAnimatingCardOut)
+                .buttonStyle(.bordered)
+                .disabled(!viewModel.canUndoLastDecision || isAnimatingCardOut)
+
+                HStack(spacing: 16) {
+                    Button {
+                        completeCurrentPhoto(.keep, exitOffset: swipeThreshold * 3)
+                    } label: {
+                        Label("Keep", systemImage: "checkmark")
+                            .frame(maxWidth: .infinity)
+                    }
+                    .buttonStyle(.borderedProminent)
+                    .tint(keepColor)
+                    .disabled(viewModel.currentPhoto == nil || isAnimatingCardOut)
+
+                    Button {
+                        completeCurrentPhoto(.pendingDeletion, exitOffset: -swipeThreshold * 3)
+                    } label: {
+                        Label("Delete", systemImage: "trash")
+                            .frame(maxWidth: .infinity)
+                    }
+                    .buttonStyle(.borderedProminent)
+                    .tint(deleteColor)
+                    .disabled(viewModel.currentPhoto == nil || isAnimatingCardOut)
+                }
+            }
+            .padding(24)
+
+            if isPhotoFullscreen, let currentPhoto = viewModel.currentPhoto {
+                FullscreenPhotoOverlay(
+                    photo: currentPhoto,
+                    thumbnailState: thumbnailViewModel.state
+                ) {
+                    withAnimation(.spring(response: 0.32, dampingFraction: 0.86)) {
+                        isPhotoFullscreen = false
+                    }
+                }
+                .transition(.opacity.combined(with: .scale(scale: 0.96)))
+                .zIndex(1)
             }
         }
-        .padding(24)
         .background(Color(.secondarySystemBackground).ignoresSafeArea())
         .navigationTitle("Review")
         .navigationBarTitleDisplayMode(.inline)
+        .toolbar {
+            ToolbarItem(placement: .topBarTrailing) {
+                Button("Done") {
+                    finishReview()
+                }
+                .disabled(isAnimatingCardOut)
+            }
+        }
+        .toolbar(isPhotoFullscreen ? .hidden : .visible, for: .navigationBar)
         .onChange(of: viewModel.isSessionCompleted) { _, isCompleted in
             if isCompleted {
                 isShowingSummary = true
@@ -140,15 +196,19 @@ struct SwipeSessionScreen: View {
         .navigationDestination(isPresented: $isShowingSummary) {
             CleanupSummaryScreen(
                 summary: viewModel.summary,
-                onBackToMonths: {
-                    onDeletionCompleted()
-                    isShowingSummary = false
-
-                    DispatchQueue.main.async {
-                        dismiss()
-                    }
-                }
+                onCancel: cancelReviewSession,
+                onBackToMonths: completeDeletedSession
             )
+        }
+        .onChange(of: isShowingSummary) { wasShowing, isShowing in
+            guard wasShowing,
+                  !isShowing,
+                  viewModel.isSessionCompleted,
+                  !isCompletingDeletedSession else {
+                return
+            }
+
+            cancelReviewSession()
         }
         .onChange(of: viewModel.currentPhoto?.id) { _, _ in
             loadCurrentThumbnail()
@@ -164,14 +224,14 @@ struct SwipeSessionScreen: View {
     private var cardDragGesture: some Gesture {
         DragGesture()
             .onChanged { value in
-                guard !isAnimatingCardOut else {
+                guard !isAnimatingCardOut, !isPhotoFullscreen else {
                     return
                 }
 
                 cardOffset = CGSize(width: 0, height: value.translation.height)
             }
             .onEnded { value in
-                guard !isAnimatingCardOut else {
+                guard !isAnimatingCardOut, !isPhotoFullscreen else {
                     return
                 }
 
@@ -182,10 +242,6 @@ struct SwipeSessionScreen: View {
     private var cardScale: CGFloat {
         let dragProgress = min(abs(cardOffset.height) / 600, 0.04)
         return 1 - dragProgress
-    }
-
-    private var deleteHintOpacity: Double {
-        min(max(Double(-cardOffset.height / swipeThreshold), 0), 1)
     }
 
     private var keepHintOpacity: Double {
@@ -200,7 +256,15 @@ struct SwipeSessionScreen: View {
         Color(red: 0.70, green: 0.28, blue: 0.28)
     }
 
+    private var pendingDeletionCounterText: String {
+        L10n.string(format: "Pending deletion counter: %d", viewModel.pendingDeletionCount)
+    }
+
     private func handleDragEnd(_ value: DragGesture.Value) {
+        guard !isPhotoFullscreen else {
+            return
+        }
+
         let verticalDistance = value.translation.height
         let horizontalDistance = abs(value.translation.width)
 
@@ -218,7 +282,7 @@ struct SwipeSessionScreen: View {
     }
 
     private func completeCurrentPhoto(_ action: SwipeAction, exitOffset: CGFloat) {
-        guard !isAnimatingCardOut, viewModel.currentPhoto != nil else {
+        guard !isAnimatingCardOut, !isPhotoFullscreen, viewModel.currentPhoto != nil else {
             return
         }
 
@@ -242,13 +306,48 @@ struct SwipeSessionScreen: View {
     }
 
     private func undoLastDecision() {
-        guard !isAnimatingCardOut else {
+        guard !isAnimatingCardOut, !isPhotoFullscreen else {
             return
         }
 
         viewModel.undoLastDecision()
         cardOffset = .zero
         loadCurrentThumbnail()
+    }
+
+    private func finishReview() {
+        guard !isAnimatingCardOut, !isPhotoFullscreen else {
+            return
+        }
+
+        viewModel.finishReview()
+    }
+
+    private func cancelReviewSession() {
+        viewModel.reset()
+        cardOffset = .zero
+        isAnimatingCardOut = false
+        isPhotoFullscreen = false
+        thumbnailViewModel.cancel()
+        isShowingSummary = false
+
+        DispatchQueue.main.async {
+            dismiss()
+
+            DispatchQueue.main.async {
+                onSessionCancelled()
+            }
+        }
+    }
+
+    private func completeDeletedSession() {
+        isCompletingDeletedSession = true
+        onDeletionCompleted()
+        isShowingSummary = false
+
+        DispatchQueue.main.async {
+            dismiss()
+        }
     }
 
     private func loadCurrentThumbnail() {
@@ -391,6 +490,44 @@ private struct PhotoCard: View {
         }
 
         return CGSize(width: width, height: height)
+    }
+}
+
+private struct FullscreenPhotoOverlay: View {
+    let photo: PhotoAsset
+    let thumbnailState: ThumbnailState
+    let onDismiss: () -> Void
+
+    var body: some View {
+        ZStack {
+            Color.black.opacity(0.92)
+                .ignoresSafeArea()
+
+            fullscreenContent
+                .frame(maxWidth: .infinity, maxHeight: .infinity)
+                .padding(12)
+        }
+        .contentShape(Rectangle())
+        .onTapGesture {
+            onDismiss()
+        }
+    }
+
+    @ViewBuilder
+    private var fullscreenContent: some View {
+        switch thumbnailState {
+        case .idle, .loading:
+            ProgressView()
+                .tint(.white)
+        case .loaded(let image):
+            Image(uiImage: image)
+                .resizable()
+                .scaledToFit()
+        case .failed:
+            Image(systemName: photo.systemImageName)
+                .font(.system(size: 80))
+                .foregroundStyle(.white)
+        }
     }
 }
 

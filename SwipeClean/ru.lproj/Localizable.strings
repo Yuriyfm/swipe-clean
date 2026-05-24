@@ -84,6 +84,8 @@
 "Nice progress" = "Хороший прогресс";
 "More than halfway" = "Больше половины";
 "Almost done" = "Почти готово";
+"Pending deletion counter: %d" = "К удалению: %d";
+"Swipe up marks photo for deletion" = "Свайп вверх пометит фото на удаление";
 
 "Summary" = "Итог";
 "Session complete" = "Сессия завершена";

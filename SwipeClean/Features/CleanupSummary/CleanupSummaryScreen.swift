@@ -11,9 +11,9 @@ struct CleanupSummary {
 
 struct CleanupSummaryScreen: View {
     let summary: CleanupSummary
+    var onCancel: () -> Void = {}
     var onBackToMonths: () -> Void = {}
 
-    @Environment(\.dismiss) private var dismiss
     @State private var deletionState: DeletionState = .idle
     @State private var isShowingDeleteConfirmation = false
 
@@ -104,7 +104,7 @@ struct CleanupSummaryScreen: View {
 
                 if !deletionState.isSuccess {
                     Button {
-                        dismiss()
+                        onCancel()
                     } label: {
                         Text("Cancel")
                             .font(.headline)
@@ -131,6 +131,7 @@ struct CleanupSummaryScreen: View {
         .background(Color(.secondarySystemBackground).ignoresSafeArea())
         .navigationTitle("Summary")
         .navigationBarTitleDisplayMode(.inline)
+        .navigationBarBackButtonHidden(deletionState == .deleting)
         .interactiveDismissDisabled(deletionState == .deleting)
         .alert("Delete selected items?", isPresented: $isShowingDeleteConfirmation) {
             Button("Cancel", role: .cancel) {

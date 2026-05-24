@@ -1,3 +1,8 @@
+# Photo Library Safety
+
+> Read this for any task touching PhotoKit, swipe decisions, deletion, permissions, summaries, or cleanup modes.
+> This file is the source of truth for media deletion safety.
+
 Photo deletion safety rules:
 
 1. Swipe up never deletes a photo or video.

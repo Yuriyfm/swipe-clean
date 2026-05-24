@@ -50,6 +50,9 @@ struct MonthListScreen: View {
                         Task {
                             await loadMonths()
                         }
+                    },
+                    onSessionCancelled: {
+                        dismiss()
                     }
                 )
             } label: {

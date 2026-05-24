@@ -85,6 +85,8 @@
 "Nice progress" = "Nice progress";
 "More than halfway" = "More than halfway";
 "Almost done" = "Almost done";
+"Pending deletion counter: %d" = "Pending deletion: %d";
+"Swipe up marks photo for deletion" = "Swipe up marks photo for deletion";
 
 "Summary" = "Summary";
 "Session complete" = "Session complete";
