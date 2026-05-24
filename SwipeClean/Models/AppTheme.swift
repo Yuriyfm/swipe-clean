@@ -14,11 +14,11 @@ enum AppTheme: String, CaseIterable, Identifiable {
     var title: String {
         switch self {
         case .system:
-            return "System"
+            return L10n.string("System")
         case .light:
-            return "Light"
+            return L10n.string("Light")
         case .dark:
-            return "Dark"
+            return L10n.string("Dark")
         }
     }
 

@@ -113,6 +113,18 @@ struct CleanupSummaryScreen: View {
                     .buttonStyle(.bordered)
                     .disabled(deletionState == .deleting)
                 }
+
+                if deletionState.canOpenSettings {
+                    Button {
+                        PhotoLibraryAccessHelper.openAppSettings()
+                    } label: {
+                        Text("Open Settings")
+                            .font(.headline)
+                            .frame(maxWidth: .infinity)
+                    }
+                    .buttonStyle(.bordered)
+                    .disabled(deletionState == .deleting)
+                }
             }
         }
         .padding(24)
@@ -127,7 +139,7 @@ struct CleanupSummaryScreen: View {
                 deleteSelectedPhotos()
             }
         } message: {
-            Text("This will move \(summary.pendingDeletionCount) items to Recently Deleted in your Photos library. You can recover them from Photos for a limited time.")
+            Text(L10n.string(format: "This will move %d items to Recently Deleted in your Photos library. You can recover them from Photos for a limited time.", summary.pendingDeletionCount))
         }
     }
 
@@ -136,7 +148,7 @@ struct CleanupSummaryScreen: View {
             Text("Marked for deletion")
                 .font(.headline)
 
-            Text(summary.pendingDeletionPhotos.isEmpty ? "You kept everything in this session." : "Nothing has been deleted yet.")
+            Text(LocalizedStringKey(summary.pendingDeletionPhotos.isEmpty ? "You kept everything in this session." : "Nothing has been deleted yet."))
                 .font(.callout)
                 .foregroundStyle(.secondary)
 
@@ -170,22 +182,22 @@ struct CleanupSummaryScreen: View {
 
     private var completionMessage: String {
         if summary.pendingDeletionCount == 0 {
-            return "You kept everything in this session."
+            return L10n.string("You kept everything in this session.")
         }
 
-        return "Review selected items before deleting. Nothing has been deleted yet."
+        return L10n.string("Review selected items before deleting. Nothing has been deleted yet.")
     }
 
     private var achievementMessage: String {
         if summary.reviewedCount >= 50 {
-            return "Big review session"
+            return L10n.string("Big review session")
         }
 
         if summary.pendingDeletionCount == 0 {
-            return "Clean sweep"
+            return L10n.string("Clean sweep")
         }
 
-        return "Ready for review"
+        return L10n.string("Ready for review")
     }
 
     private var statusMessage: String? {
@@ -193,21 +205,21 @@ struct CleanupSummaryScreen: View {
         case .idle, .confirming:
             return nil
         case .deleting:
-            return "Deleting items..."
+            return L10n.string("Deleting items...")
         case .success(let result):
             if result.missingCount > 0 {
-                return "Moved \(result.deletedCount) items to Recently Deleted. \(result.missingCount) items were no longer available."
+                return L10n.string(format: "Moved %d items to Recently Deleted. %d items were no longer available.", result.deletedCount, result.missingCount)
             }
 
-            return "Moved \(result.deletedCount) items to Recently Deleted."
-        case .failure(let message):
+            return L10n.string(format: "Moved %d items to Recently Deleted.", result.deletedCount)
+        case .failure(let message, _):
             return message
         }
     }
 
     private var statusMessageColor: Color {
         switch deletionState {
-        case .failure:
+        case .failure(_, _):
             return .red
         default:
             return .secondary
@@ -230,10 +242,25 @@ struct CleanupSummaryScreen: View {
                 }
             } catch {
                 await MainActor.run {
-                    deletionState = .failure(error.localizedDescription)
+                    deletionState = .failure(
+                        error.localizedDescription,
+                        canOpenSettings: isPhotoAccessFailure(error)
+                    )
                 }
             }
         }
+    }
+
+    private func isPhotoAccessFailure(_ error: Error) -> Bool {
+        guard let deletionError = error as? PhotoDeletionServiceError else {
+            return false
+        }
+
+        if case .accessNotGranted = deletionError {
+            return true
+        }
+
+        return false
     }
 }
 
@@ -242,11 +269,11 @@ private enum DeletionState: Equatable {
     case confirming
     case deleting
     case success(PhotoDeletionResult)
-    case failure(String)
+    case failure(String, canOpenSettings: Bool)
 
     var allowsDeletion: Bool {
         switch self {
-        case .idle, .failure:
+        case .idle, .failure(_, _):
             return true
         case .confirming, .deleting, .success:
             return false
@@ -260,6 +287,14 @@ private enum DeletionState: Equatable {
 
         return false
     }
+
+    var canOpenSettings: Bool {
+        if case .failure(_, let canOpenSettings) = self {
+            return canOpenSettings
+        }
+
+        return false
+    }
 }
 
 private struct SummaryRow: View {
@@ -268,7 +303,7 @@ private struct SummaryRow: View {
 
     var body: some View {
         HStack {
-            Text(title)
+            Text(LocalizedStringKey(title))
                 .foregroundStyle(.secondary)
 
             Spacer()

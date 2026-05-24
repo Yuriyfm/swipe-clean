@@ -39,6 +39,7 @@ Included:
 - Photo and video thumbnail previews
 - Screenshots-only and videos-only review modes
 - System, Light, and Dark appearance setting
+- English and Russian localization with a language setting
 
 Not included:
 - Cloud sync
@@ -69,3 +70,23 @@ SwipeClean supports three app appearance settings:
 - Dark: forces dark appearance
 
 Theme selection is a visual preference only. It does not change Photo Library permissions, media loading, swipe decisions, deletion confirmation, or PhotoKit deletion behavior.
+
+## Localization
+
+SwipeClean supports English and Russian. The language setting is available in Settings:
+
+- System: follows the current iOS language
+- English: forces English app text
+- Russian: forces Russian app text
+
+All user-facing app strings should be localized, including permission messages, cleanup modes, empty states, swipe controls, summary copy, and deletion confirmation text. Language selection is a UI preference only and does not change media safety or deletion behavior.
+
+## Permissions and Empty States
+
+SwipeClean explains photo library access states clearly:
+
+- Denied or restricted access shows a helpful message and an Open Settings action.
+- Limited access is allowed and explained as a non-blocking state.
+- Users with limited access can manage selected photos when iOS supports the limited library picker.
+- Empty cleanup modes show mode-specific messages for no accessible media, no screenshots, or no videos.
+- If deletion fails because full access is required, pending deletion previews remain visible and the user can open Settings or retry.

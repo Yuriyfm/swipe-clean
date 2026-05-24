@@ -77,6 +77,21 @@ struct SwipeSessionScreen: View {
                         .animation(.spring(response: 0.28, dampingFraction: 0.82), value: cardOffset)
                 }
                     .transition(.opacity)
+            } else if viewModel.totalCount == 0 {
+                VStack(spacing: 12) {
+                    Image(systemName: "photo.on.rectangle")
+                        .font(.system(size: 48))
+                        .foregroundStyle(Color.accentColor)
+
+                    Text("No Items to Review")
+                        .font(.title2)
+                        .fontWeight(.semibold)
+
+                    Text("This session does not contain any accessible media.")
+                        .font(.callout)
+                        .foregroundStyle(.secondary)
+                        .multilineTextAlignment(.center)
+                }
             }
 
             Spacer()
@@ -99,6 +114,7 @@ struct SwipeSessionScreen: View {
                 }
                 .buttonStyle(.borderedProminent)
                 .tint(.green)
+                .disabled(viewModel.currentPhoto == nil || isAnimatingCardOut)
 
                 Button {
                     completeCurrentPhoto(.pendingDeletion, exitOffset: -swipeThreshold * 3)
@@ -108,6 +124,7 @@ struct SwipeSessionScreen: View {
                 }
                 .buttonStyle(.borderedProminent)
                 .tint(.red)
+                .disabled(viewModel.currentPhoto == nil || isAnimatingCardOut)
             }
         }
         .padding(24)
@@ -191,7 +208,7 @@ struct SwipeSessionScreen: View {
     }
 
     private func completeCurrentPhoto(_ action: SwipeAction, exitOffset: CGFloat) {
-        guard !isAnimatingCardOut else {
+        guard !isAnimatingCardOut, viewModel.currentPhoto != nil else {
             return
         }
 
@@ -350,7 +367,7 @@ private struct SwipeHintLabel: View {
     let opacity: Double
 
     var body: some View {
-        Label(title, systemImage: systemImageName)
+        Label(LocalizedStringKey(title), systemImage: systemImageName)
             .font(.headline)
             .foregroundStyle(color)
             .padding(.horizontal, 16)

@@ -24,6 +24,10 @@
 		10000000000000000000000F /* CleanupModesScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 10000000000000000000010F /* CleanupModesScreen.swift */; };
 		100000000000000000000010 /* AppTheme.swift in Sources */ = {isa = PBXBuildFile; fileRef = 100000000000000000000110 /* AppTheme.swift */; };
 		100000000000000000000011 /* SettingsScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 100000000000000000000111 /* SettingsScreen.swift */; };
+		100000000000000000000012 /* PhotoLibraryAccessHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 100000000000000000000112 /* PhotoLibraryAccessHelper.swift */; };
+		100000000000000000000013 /* AppLanguage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 100000000000000000000113 /* AppLanguage.swift */; };
+		100000000000000000000014 /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = 100000000000000000000416 /* Localizable.strings */; };
+		100000000000000000000015 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 100000000000000000000417 /* InfoPlist.strings */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -44,6 +48,12 @@
 		10000000000000000000010F /* CleanupModesScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CleanupModesScreen.swift; sourceTree = "<group>"; };
 		100000000000000000000110 /* AppTheme.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppTheme.swift; sourceTree = "<group>"; };
 		100000000000000000000111 /* SettingsScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsScreen.swift; sourceTree = "<group>"; };
+		100000000000000000000112 /* PhotoLibraryAccessHelper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PhotoLibraryAccessHelper.swift; sourceTree = "<group>"; };
+		100000000000000000000113 /* AppLanguage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppLanguage.swift; sourceTree = "<group>"; };
+		100000000000000000000114 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/Localizable.strings; sourceTree = "<group>"; };
+		100000000000000000000115 /* ru */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ru; path = ru.lproj/Localizable.strings; sourceTree = "<group>"; };
+		100000000000000000000116 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/InfoPlist.strings; sourceTree = "<group>"; };
+		100000000000000000000117 /* ru */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ru; path = ru.lproj/InfoPlist.strings; sourceTree = "<group>"; };
 		100000000000000000000201 /* SwipeClean.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = SwipeClean.app; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
@@ -56,6 +66,18 @@
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXResourcesBuildPhase section */
+		100000000000000000000602 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				100000000000000000000014 /* Localizable.strings in Resources */,
+				100000000000000000000015 /* InfoPlist.strings in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
 
 /* Begin PBXGroup section */
 		100000000000000000000401 = {
@@ -74,6 +96,8 @@
 				100000000000000000000413 /* Services */,
 				100000000000000000000406 /* Models */,
 				100000000000000000000407 /* Shared */,
+				100000000000000000000416 /* Localizable.strings */,
+				100000000000000000000417 /* InfoPlist.strings */,
 			);
 			path = SwipeClean;
 			sourceTree = "<group>";
@@ -114,6 +138,7 @@
 				100000000000000000000107 /* PhotoAsset.swift */,
 				100000000000000000000108 /* SwipeDecision.swift */,
 				100000000000000000000110 /* AppTheme.swift */,
+				100000000000000000000113 /* AppLanguage.swift */,
 			);
 			path = Models;
 			sourceTree = "<group>";
@@ -174,6 +199,7 @@
 				10000000000000000000010C /* PhotoLibraryService.swift */,
 				10000000000000000000010D /* PhotoThumbnailService.swift */,
 				10000000000000000000010E /* PhotoDeletionService.swift */,
+				100000000000000000000112 /* PhotoLibraryAccessHelper.swift */,
 			);
 			path = Services;
 			sourceTree = "<group>";
@@ -202,6 +228,7 @@
 			buildConfigurationList = 100000000000000000000701 /* Build configuration list for PBXNativeTarget "SwipeClean" */;
 			buildPhases = (
 				100000000000000000000601 /* Sources */,
+				100000000000000000000602 /* Resources */,
 				100000000000000000000301 /* Frameworks */,
 			);
 			buildRules = (
@@ -234,6 +261,7 @@
 			hasScannedForEncodings = 0;
 			knownRegions = (
 				en,
+				ru,
 				Base,
 			);
 			mainGroup = 100000000000000000000401;
@@ -263,15 +291,38 @@
 				10000000000000000000000C /* PhotoLibraryService.swift in Sources */,
 				10000000000000000000000D /* PhotoThumbnailService.swift in Sources */,
 				10000000000000000000000E /* PhotoDeletionService.swift in Sources */,
+				100000000000000000000012 /* PhotoLibraryAccessHelper.swift in Sources */,
 				100000000000000000000006 /* MonthGroup.swift in Sources */,
 				100000000000000000000007 /* PhotoAsset.swift in Sources */,
 				100000000000000000000008 /* SwipeDecision.swift in Sources */,
 				100000000000000000000010 /* AppTheme.swift in Sources */,
+				100000000000000000000013 /* AppLanguage.swift in Sources */,
 				100000000000000000000009 /* MockPhotoLibrary.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXSourcesBuildPhase section */
+
+/* Begin PBXVariantGroup section */
+		100000000000000000000416 /* Localizable.strings */ = {
+			isa = PBXVariantGroup;
+			children = (
+				100000000000000000000114 /* en */,
+				100000000000000000000115 /* ru */,
+			);
+			name = Localizable.strings;
+			sourceTree = "<group>";
+		};
+		100000000000000000000417 /* InfoPlist.strings */ = {
+			isa = PBXVariantGroup;
+			children = (
+				100000000000000000000116 /* en */,
+				100000000000000000000117 /* ru */,
+			);
+			name = InfoPlist.strings;
+			sourceTree = "<group>";
+		};
+/* End PBXVariantGroup section */
 
 /* Begin XCBuildConfiguration section */
 		100000000000000000000901 /* Debug */ = {
@@ -401,7 +452,7 @@
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
-				INFOPLIST_KEY_NSPhotoLibraryUsageDescription = "SwipeClean needs access to your photo library so you can review photos by month and choose which ones to keep or delete.";
+				INFOPLIST_KEY_NSPhotoLibraryUsageDescription = "SwipeClean needs access to your photo library so you can review photos and videos by cleanup mode and choose which items to keep or delete.";
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
@@ -430,7 +481,7 @@
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
-				INFOPLIST_KEY_NSPhotoLibraryUsageDescription = "SwipeClean needs access to your photo library so you can review photos by month and choose which ones to keep or delete.";
+				INFOPLIST_KEY_NSPhotoLibraryUsageDescription = "SwipeClean needs access to your photo library so you can review photos and videos by cleanup mode and choose which items to keep or delete.";
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";

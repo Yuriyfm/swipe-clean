@@ -8,7 +8,7 @@ enum PhotoLibraryServiceError: LocalizedError {
     var errorDescription: String? {
         switch self {
         case .accessNotGranted:
-            return "Photo library access is not authorized."
+            return L10n.string("Photo library access is not authorized.")
         }
     }
 }
@@ -96,7 +96,7 @@ struct PhotoLibraryService {
         return groupedPhotos
             .map { key, photos in
                 let monthName = monthName(for: key.month)
-                let title = key.year == 0 ? "Unknown Date" : "\(monthName) \(key.year)"
+                let title = key.year == 0 ? L10n.string("Unknown Date") : "\(monthName) \(key.year)"
 
                 return MonthGroup(
                     id: "\(key.year)-\(String(format: "%02d", key.month))",
@@ -118,18 +118,24 @@ struct PhotoLibraryService {
 
     private static func photoTitle(for asset: PHAsset) -> String {
         guard let creationDate = asset.creationDate else {
-            return asset.mediaType == .video ? "Video" : "Photo"
+            return asset.mediaType == .video ? L10n.string("Video fallback title") : L10n.string("Photo fallback title")
         }
 
-        return DateFormatter.photoTitleFormatter.string(from: creationDate)
+        let formatter = DateFormatter()
+        formatter.locale = L10n.locale
+        formatter.dateStyle = .medium
+        formatter.timeStyle = .none
+        return formatter.string(from: creationDate)
     }
 
     private static func monthName(for month: Int) -> String {
         guard (1...12).contains(month) else {
-            return "Unknown"
+            return L10n.string("Unknown")
         }
 
-        return DateFormatter().monthSymbols[month - 1]
+        let formatter = DateFormatter()
+        formatter.locale = L10n.locale
+        return formatter.monthSymbols[month - 1]
     }
 
     private static func mediaType(for asset: PHAsset) -> MediaType? {
@@ -205,13 +211,4 @@ private extension MediaType {
             return .purple.opacity(0.75)
         }
     }
-}
-
-private extension DateFormatter {
-    static let photoTitleFormatter: DateFormatter = {
-        let formatter = DateFormatter()
-        formatter.dateStyle = .medium
-        formatter.timeStyle = .none
-        return formatter
-    }()
 }

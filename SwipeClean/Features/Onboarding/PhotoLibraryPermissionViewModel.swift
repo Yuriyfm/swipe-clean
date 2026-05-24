@@ -9,54 +9,45 @@ final class PhotoLibraryPermissionViewModel: ObservableObject {
         self.currentPermissionStatus = PHPhotoLibrary.authorizationStatus(for: .readWrite)
     }
 
-    var canContinue: Bool {
-        currentPermissionStatus == .authorized || currentPermissionStatus == .limited
+    var canOpenSettings: Bool {
+        currentPermissionStatus == .denied || currentPermissionStatus == .restricted
+    }
+
+    var canManageLimitedAccess: Bool {
+        currentPermissionStatus == .limited
     }
 
     var statusTitle: String {
         switch currentPermissionStatus {
         case .notDetermined:
-            return "Photo access is not set"
+            return L10n.string("Photo access is not set")
         case .authorized:
-            return "Full photo access granted"
+            return L10n.string("Full photo access granted")
         case .limited:
-            return "Limited photo access granted"
+            return L10n.string("Limited photo access granted")
         case .denied:
-            return "Photo access denied"
+            return L10n.string("Photo access denied")
         case .restricted:
-            return "Photo access restricted"
+            return L10n.string("Photo access restricted")
         @unknown default:
-            return "Unknown photo access status"
+            return L10n.string("Unknown photo access status")
         }
     }
 
     var statusMessage: String {
         switch currentPermissionStatus {
         case .notDetermined:
-            return "SwipeClean needs photo access before cleanup can start. Permission does not delete or modify photos or videos."
+            return L10n.string("SwipeClean needs photo access before cleanup can start. Permission does not delete or modify photos or videos.")
         case .authorized:
-            return "You can continue to your media months. This version loads only metadata and identifiers."
+            return L10n.string("You can continue to your media months. This version loads only metadata and identifiers.")
         case .limited:
-            return "You can continue with limited access. Only the photos and videos you selected will appear."
+            return L10n.string("You can continue with limited access. Only the photos and videos you selected will appear.")
         case .denied:
-            return "Photo access is needed to review your library. You can enable access later in iOS Settings."
+            return L10n.string("Photo access is needed to review your library. Open iOS Settings and allow photo access to continue.")
         case .restricted:
-            return "Photo access is restricted on this device, so SwipeClean cannot continue yet."
+            return L10n.string("Photo access is restricted on this device. Check iOS Settings or device restrictions before continuing.")
         @unknown default:
-            return "SwipeClean cannot determine the current photo access state."
-        }
-    }
-
-    var requestButtonTitle: String {
-        switch currentPermissionStatus {
-        case .notDetermined:
-            return "Allow Photo Access"
-        case .denied, .restricted:
-            return "Check Again"
-        case .authorized, .limited:
-            return "Access Granted"
-        @unknown default:
-            return "Check Access"
+            return L10n.string("SwipeClean cannot determine the current photo access state.")
         }
     }
 
@@ -75,5 +66,15 @@ final class PhotoLibraryPermissionViewModel: ObservableObject {
                 self?.currentPermissionStatus = status
             }
         }
+    }
+
+    func openSettings() {
+        PhotoLibraryAccessHelper.openAppSettings()
+    }
+
+    @MainActor
+    func manageLimitedAccess() {
+        PhotoLibraryAccessHelper.presentLimitedLibraryPicker()
+        checkCurrentStatus()
     }
 }

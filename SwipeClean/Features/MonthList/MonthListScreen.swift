@@ -1,11 +1,15 @@
+import Photos
 import SwiftUI
+import UIKit
 
 struct MonthListScreen: View {
     private let previewMonths: [MonthGroup]?
     private let photoLibraryService = PhotoLibraryService()
 
+    @Environment(\.dismiss) private var dismiss
     @State private var months: [MonthGroup] = []
     @State private var loadingState: LoadingState = .idle
+    @State private var permissionStatus = PHPhotoLibrary.authorizationStatus(for: .readWrite)
 
     init(months: [MonthGroup]? = nil) {
         self.previewMonths = months
@@ -17,19 +21,11 @@ struct MonthListScreen: View {
             case .idle, .loading:
                 ProgressView("Loading media months...")
             case .loaded where months.isEmpty:
-                ContentUnavailableView(
-                    "No Media Available",
-                    systemImage: "photo.on.rectangle",
-                    description: Text("SwipeClean could not find any accessible photos or videos. If you granted limited access, add more items in Settings.")
-                )
+                emptyStateView
             case .loaded:
                 monthList
             case .failed(let message):
-                ContentUnavailableView(
-                    "Could Not Load Media",
-                    systemImage: "exclamationmark.triangle",
-                    description: Text(message)
-                )
+                errorStateView(message)
             }
         }
         .navigationTitle("Choose Month")
@@ -38,6 +34,9 @@ struct MonthListScreen: View {
         }
         .refreshable {
             await loadMonths()
+        }
+        .onReceive(NotificationCenter.default.publisher(for: UIApplication.didBecomeActiveNotification)) { _ in
+            permissionStatus = PHPhotoLibrary.authorizationStatus(for: .readWrite)
         }
     }
 
@@ -58,6 +57,74 @@ struct MonthListScreen: View {
         }
     }
 
+    private var emptyStateView: some View {
+        VStack(spacing: 16) {
+            Image(systemName: "photo.on.rectangle")
+                .font(.system(size: 48))
+                .foregroundStyle(Color.accentColor)
+
+            Text("No Accessible Media")
+                .font(.title2)
+                .fontWeight(.semibold)
+
+            Text(emptyStateMessage)
+                .font(.callout)
+                .foregroundStyle(.secondary)
+                .multilineTextAlignment(.center)
+
+            if permissionStatus == .limited {
+                Button("Manage Selected Photos") {
+                    manageLimitedAccess()
+                }
+                .buttonStyle(.borderedProminent)
+            }
+
+            Button("Back to Cleanup Modes") {
+                dismiss()
+            }
+            .buttonStyle(.bordered)
+        }
+        .padding(24)
+    }
+
+    private func errorStateView(_ message: String) -> some View {
+        VStack(spacing: 16) {
+            Image(systemName: "exclamationmark.triangle")
+                .font(.system(size: 48))
+                .foregroundStyle(.orange)
+
+            Text("Could Not Load Media")
+                .font(.title2)
+                .fontWeight(.semibold)
+
+            Text(message)
+                .font(.callout)
+                .foregroundStyle(.secondary)
+                .multilineTextAlignment(.center)
+
+            if permissionStatus == .denied || permissionStatus == .restricted {
+                Button("Open Settings") {
+                    PhotoLibraryAccessHelper.openAppSettings()
+                }
+                .buttonStyle(.borderedProminent)
+            }
+
+            Button("Back to Cleanup Modes") {
+                dismiss()
+            }
+            .buttonStyle(.bordered)
+        }
+        .padding(24)
+    }
+
+    private var emptyStateMessage: String {
+        if permissionStatus == .limited {
+            return L10n.string("SwipeClean could not find accessible photos or videos to group by month. With limited access, only selected media is available.")
+        }
+
+        return L10n.string("SwipeClean could not find photos or videos available for monthly review.")
+    }
+
     @MainActor
     private func loadMonthsIfNeeded() async {
         guard loadingState == .idle else {
@@ -75,6 +142,7 @@ struct MonthListScreen: View {
             return
         }
 
+        permissionStatus = PHPhotoLibrary.authorizationStatus(for: .readWrite)
         loadingState = .loading
 
         do {
@@ -82,6 +150,14 @@ struct MonthListScreen: View {
             loadingState = .loaded
         } catch {
             loadingState = .failed(error.localizedDescription)
+        }
+    }
+
+    private func manageLimitedAccess() {
+        Task { @MainActor in
+            PhotoLibraryAccessHelper.presentLimitedLibraryPicker()
+            permissionStatus = PHPhotoLibrary.authorizationStatus(for: .readWrite)
+            await loadMonths()
         }
     }
 }
@@ -107,7 +183,7 @@ private struct MonthRow: View {
                 Text(month.title)
                     .font(.headline)
 
-                Text("\(month.photoCount) accessible items")
+                Text(L10n.string(format: "%d accessible items", month.photoCount))
                     .font(.subheadline)
                     .foregroundStyle(.secondary)
             }

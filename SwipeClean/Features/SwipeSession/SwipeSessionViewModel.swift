@@ -64,30 +64,30 @@ final class SwipeSessionViewModel: ObservableObject {
 
     var progressText: String {
         guard totalCount > 0 else {
-            return "0 of 0"
+            return L10n.string("0 of 0")
         }
 
-        return "\(reviewedCount) of \(totalCount) reviewed"
+        return L10n.string(format: "%d of %d reviewed", reviewedCount, totalCount)
     }
 
     var encouragementText: String {
         guard totalCount > 0 else {
-            return "Ready to review"
+            return L10n.string("Ready to review")
         }
 
         if totalCount - reviewedCount <= 3 && reviewedCount > 0 {
-            return "Last few items"
+            return L10n.string("Last few items")
         }
 
         switch progressFraction {
         case 0:
-            return "Getting started"
+            return L10n.string("Getting started")
         case 0..<0.5:
-            return "Nice progress"
+            return L10n.string("Nice progress")
         case 0..<0.85:
-            return "More than halfway"
+            return L10n.string("More than halfway")
         default:
-            return "Almost done"
+            return L10n.string("Almost done")
         }
     }
 

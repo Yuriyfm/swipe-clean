@@ -1,4 +1,6 @@
+import Photos
 import SwiftUI
+import UIKit
 
 struct CleanupModesScreen: View {
     private let photoLibraryService = PhotoLibraryService()
@@ -7,15 +9,53 @@ struct CleanupModesScreen: View {
     @State private var activeSession: MonthGroup?
     @State private var emptyMode: CleanupMode?
     @State private var errorMessage: String?
+    @State private var permissionStatus = PHPhotoLibrary.authorizationStatus(for: .readWrite)
 
     var body: some View {
         List {
+            if permissionStatus == .limited {
+                Section {
+                    VStack(alignment: .leading, spacing: 8) {
+                        Label("Limited photo access", systemImage: "photo.badge.checkmark")
+                            .font(.headline)
+
+                        Text("SwipeClean can only review the photos and videos you selected. You can update that selection at any time.")
+                            .font(.callout)
+                            .foregroundStyle(.secondary)
+
+                        Button("Manage Selected Photos") {
+                            manageLimitedAccess()
+                        }
+                    }
+                    .padding(.vertical, 4)
+                }
+            }
+
+            if permissionStatus == .denied || permissionStatus == .restricted {
+                Section {
+                    VStack(alignment: .leading, spacing: 8) {
+                        Label("Photo access needed", systemImage: "exclamationmark.triangle")
+                            .font(.headline)
+
+                        Text("SwipeClean needs photo library access to review media. Open Settings and allow access before starting a cleanup mode.")
+                            .font(.callout)
+                            .foregroundStyle(.secondary)
+
+                        Button("Open Settings") {
+                            PhotoLibraryAccessHelper.openAppSettings()
+                        }
+                    }
+                    .padding(.vertical, 4)
+                }
+            }
+
             Section {
                 NavigationLink {
                     MonthListScreen()
                 } label: {
                     CleanupModeRow(mode: .monthlyReview, isLoading: false)
                 }
+                .disabled(loadingMode != nil || !canLoadMedia)
 
                 ForEach(CleanupMode.flatModes) { mode in
                     Button {
@@ -23,7 +63,7 @@ struct CleanupModesScreen: View {
                     } label: {
                         CleanupModeRow(mode: mode, isLoading: loadingMode == mode)
                     }
-                    .disabled(loadingMode != nil)
+                    .disabled(loadingMode != nil || !canLoadMedia)
                 }
             }
         }
@@ -48,19 +88,37 @@ struct CleanupModesScreen: View {
                 )
             }
         }
-        .alert("Nothing to Review", isPresented: isShowingEmptyAlert) {
+        .alert(emptyMode?.emptyTitle ?? L10n.string("Nothing to Review"), isPresented: isShowingEmptyAlert) {
+            if permissionStatus == .limited {
+                Button("Manage Selected Photos") {
+                    manageLimitedAccess()
+                }
+            }
+
             Button("OK", role: .cancel) {
                 emptyMode = nil
             }
         } message: {
-            Text(emptyMode?.emptyMessage ?? "")
+            Text(emptyMode?.emptyMessage(isLimitedAccess: permissionStatus == .limited) ?? "")
         }
         .alert("Could Not Load Media", isPresented: isShowingErrorAlert) {
+            if permissionStatus == .denied || permissionStatus == .restricted {
+                Button("Open Settings") {
+                    PhotoLibraryAccessHelper.openAppSettings()
+                }
+            }
+
             Button("OK", role: .cancel) {
                 errorMessage = nil
             }
         } message: {
             Text(errorMessage ?? "")
+        }
+        .onAppear {
+            checkPermissionStatus()
+        }
+        .onReceive(NotificationCenter.default.publisher(for: UIApplication.didBecomeActiveNotification)) { _ in
+            checkPermissionStatus()
         }
     }
 
@@ -97,7 +155,18 @@ struct CleanupModesScreen: View {
         )
     }
 
+    private var canLoadMedia: Bool {
+        permissionStatus == .authorized || permissionStatus == .limited
+    }
+
     private func loadSession(for mode: CleanupMode) {
+        checkPermissionStatus()
+
+        guard canLoadMedia else {
+            errorMessage = L10n.string("SwipeClean needs photo library access to review media. Open Settings and allow access to continue.")
+            return
+        }
+
         loadingMode = mode
 
         Task {
@@ -130,6 +199,17 @@ struct CleanupModesScreen: View {
         }
     }
 
+    private func checkPermissionStatus() {
+        permissionStatus = PHPhotoLibrary.authorizationStatus(for: .readWrite)
+    }
+
+    private func manageLimitedAccess() {
+        Task { @MainActor in
+            PhotoLibraryAccessHelper.presentLimitedLibraryPicker()
+            checkPermissionStatus()
+        }
+    }
+
     private func mediaItems(for mode: CleanupMode) async throws -> [PhotoAsset] {
         switch mode {
         case .monthlyReview:
@@ -159,26 +239,26 @@ private enum CleanupMode: String, Identifiable, CaseIterable {
     var title: String {
         switch self {
         case .monthlyReview:
-            return "Monthly Review"
+            return L10n.string("Monthly Review")
         case .allMedia:
-            return "All Media"
+            return L10n.string("All Media")
         case .screenshots:
-            return "Screenshots"
+            return L10n.string("Screenshots")
         case .videos:
-            return "Videos"
+            return L10n.string("Videos")
         }
     }
 
     var description: String {
         switch self {
         case .monthlyReview:
-            return "Review your library month by month."
+            return L10n.string("Review your library month by month.")
         case .allMedia:
-            return "Review all available photos and videos."
+            return L10n.string("Review all available photos and videos.")
         case .screenshots:
-            return "Clean up screenshots."
+            return L10n.string("Clean up screenshots.")
         case .videos:
-            return "Review videos only."
+            return L10n.string("Review videos only.")
         }
     }
 
@@ -195,16 +275,31 @@ private enum CleanupMode: String, Identifiable, CaseIterable {
         }
     }
 
-    var emptyMessage: String {
+    var emptyTitle: String {
         switch self {
         case .monthlyReview:
-            return "No month groups are available."
+            return L10n.string("No Accessible Media")
         case .allMedia:
-            return "No media items are available."
+            return L10n.string("No Accessible Media")
         case .screenshots:
-            return "No screenshots are available."
+            return L10n.string("No Screenshots")
         case .videos:
-            return "No videos are available."
+            return L10n.string("No Videos")
+        }
+    }
+
+    func emptyMessage(isLimitedAccess: Bool) -> String {
+        let limitedAccessNote = isLimitedAccess ? L10n.string(" With limited access, only selected media is available. You can manage your selected photos and videos here.") : ""
+
+        switch self {
+        case .monthlyReview:
+            return L10n.string(format: "SwipeClean could not find accessible media to group by month.%@", limitedAccessNote)
+        case .allMedia:
+            return L10n.string(format: "SwipeClean could not find accessible photos or videos.%@", limitedAccessNote)
+        case .screenshots:
+            return L10n.string(format: "SwipeClean could not find accessible screenshots.%@", limitedAccessNote)
+        case .videos:
+            return L10n.string(format: "SwipeClean could not find accessible videos.%@", limitedAccessNote)
         }
     }
 }

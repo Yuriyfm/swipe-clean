@@ -10,13 +10,13 @@ enum PhotoDeletionServiceError: LocalizedError {
     var errorDescription: String? {
         switch self {
         case .emptySelection:
-            return "No items were selected for deletion."
+            return L10n.string("No items were selected for deletion.")
         case .accessNotGranted:
-            return "SwipeClean needs full photo library access to delete photos and videos. Enable full access in iOS Settings and try again."
+            return L10n.string("SwipeClean needs full photo library access to delete photos and videos. Enable full access in iOS Settings and try again.")
         case .noMatchingAssets:
-            return "The selected items could not be found in the photo library."
+            return L10n.string("The selected items could not be found in the photo library.")
         case .deletionFailed:
-            return "Items could not be deleted."
+            return L10n.string("Items could not be deleted.")
         }
     }
 }

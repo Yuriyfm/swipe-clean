@@ -128,11 +128,17 @@ Not included:
 - Empty states
 - Permission denied state
 - Limited library explanation
+- Open Settings action for denied, restricted, or full-access-required states
+- Limited library selection management where iOS supports it
+- Mode-specific empty states for Monthly Review, All Media, Screenshots, and Videos
 - Loading states
 - Error states
 - System, Light, and Dark appearance setting
+- System, English, and Russian language setting
+- Localized user-facing strings for all main screens and safety messages
 - Dark mode and light mode readability checks for all main screens
 - Basic accessibility
 - Basic tests for pure logic
 
 Appearance settings must not affect media safety or deletion flow. Deletion remains limited to the final confirmation flow and PhotoKit deletion service.
+Language settings must not affect media safety or deletion flow. The default language follows iOS system settings.
