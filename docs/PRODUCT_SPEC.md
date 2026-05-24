@@ -21,6 +21,7 @@ Swipe-based photo and video cleanup app for iOS.
 6. User swipes each media item:
    - down = keep
    - up = mark for deletion
+   - right = go back to the previous viewed item that is not marked for deletion
 7. App shows session summary.
 8. User reviews media items marked for deletion.
 9. User taps Confirm Delete and confirms the final deletion alert.

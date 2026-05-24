@@ -181,9 +181,14 @@ struct SwipeSessionScreen: View {
         .navigationBarTitleDisplayMode(.inline)
         .toolbar {
             ToolbarItem(placement: .topBarTrailing) {
-                Button("Done") {
+                Button {
                     finishReview()
+                } label: {
+                    Text("Done")
+                        .fontWeight(.semibold)
+                        .foregroundStyle(.primary)
                 }
+                .tint(.primary)
                 .disabled(isAnimatingCardOut)
             }
         }
@@ -228,7 +233,12 @@ struct SwipeSessionScreen: View {
                     return
                 }
 
-                cardOffset = CGSize(width: 0, height: value.translation.height)
+                if value.translation.width > 0,
+                   value.translation.width > abs(value.translation.height) {
+                    cardOffset = CGSize(width: value.translation.width, height: 0)
+                } else {
+                    cardOffset = CGSize(width: 0, height: value.translation.height)
+                }
             }
             .onEnded { value in
                 guard !isAnimatingCardOut, !isPhotoFullscreen else {
@@ -266,19 +276,25 @@ struct SwipeSessionScreen: View {
         }
 
         let verticalDistance = value.translation.height
-        let horizontalDistance = abs(value.translation.width)
+        let horizontalDistance = value.translation.width
 
-        guard abs(verticalDistance) >= swipeThreshold,
-              abs(verticalDistance) > horizontalDistance else {
-            cardOffset = .zero
+        if horizontalDistance >= swipeThreshold,
+           horizontalDistance > abs(verticalDistance) {
+            moveToPreviousViewedKeptPhoto()
             return
         }
 
-        if verticalDistance < 0 {
-            completeCurrentPhoto(.pendingDeletion, exitOffset: -swipeThreshold * 3)
-        } else {
-            completeCurrentPhoto(.keep, exitOffset: swipeThreshold * 3)
+        if abs(verticalDistance) >= swipeThreshold,
+           abs(verticalDistance) > abs(horizontalDistance) {
+            if verticalDistance < 0 {
+                completeCurrentPhoto(.pendingDeletion, exitOffset: -swipeThreshold * 3)
+            } else {
+                completeCurrentPhoto(.keep, exitOffset: swipeThreshold * 3)
+            }
+            return
         }
+
+        cardOffset = .zero
     }
 
     private func completeCurrentPhoto(_ action: SwipeAction, exitOffset: CGFloat) {
@@ -313,6 +329,43 @@ struct SwipeSessionScreen: View {
         viewModel.undoLastDecision()
         cardOffset = .zero
         loadCurrentThumbnail()
+    }
+
+    private func moveToPreviousViewedKeptPhoto() {
+        guard !isAnimatingCardOut, !isPhotoFullscreen else {
+            return
+        }
+
+        isAnimatingCardOut = true
+
+        withAnimation(.easeIn(duration: 0.18)) {
+            cardOffset = CGSize(width: swipeThreshold * 3, height: 0)
+        }
+
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.18) {
+            guard viewModel.moveToPreviousViewedKeptPhoto() else {
+                cardOffset = .zero
+                isAnimatingCardOut = false
+                return
+            }
+
+            var transaction = Transaction()
+            transaction.disablesAnimations = true
+            withTransaction(transaction) {
+                cardOffset = CGSize(width: -swipeThreshold * 3, height: 0)
+            }
+            loadCurrentThumbnail()
+
+            DispatchQueue.main.async {
+                withAnimation(.easeOut(duration: 0.18)) {
+                    cardOffset = .zero
+                }
+
+                DispatchQueue.main.asyncAfter(deadline: .now() + 0.18) {
+                    isAnimatingCardOut = false
+                }
+            }
+        }
     }
 
     private func finishReview() {

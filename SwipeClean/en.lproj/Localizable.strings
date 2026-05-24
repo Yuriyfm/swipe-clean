@@ -79,6 +79,7 @@
 "Video" = "Video";
 "0 of 0" = "0 of 0";
 "%d of %d reviewed" = "%d of %d reviewed";
+"Photo %d of %d" = "Photo %d of %d";
 "Ready to review" = "Ready to review";
 "Last few items" = "Last few items";
 "Getting started" = "Getting started";
@@ -100,6 +101,7 @@
 "Nothing has been deleted yet." = "Nothing has been deleted yet.";
 "No items marked for deletion." = "No items marked for deletion.";
 "You kept everything in this session." = "You kept everything in this session.";
+"Review selected items before deleting." = "Review selected items before deleting.";
 "Review selected items before deleting. Nothing has been deleted yet." = "Review selected items before deleting. Nothing has been deleted yet.";
 "Big review session" = "Big review session";
 "Clean sweep" = "Clean sweep";

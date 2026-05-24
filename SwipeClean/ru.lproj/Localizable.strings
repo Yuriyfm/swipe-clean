@@ -78,6 +78,7 @@
 "Video" = "Видео";
 "0 of 0" = "0 из 0";
 "%d of %d reviewed" = "Просмотрено: %d из %d";
+"Photo %d of %d" = "Фото %d из %d";
 "Ready to review" = "Готово к просмотру";
 "Last few items" = "Осталось немного";
 "Getting started" = "Начинаем";
@@ -99,6 +100,7 @@
 "Nothing has been deleted yet." = "Пока ничего не удалено.";
 "No items marked for deletion." = "Нет объектов, отмеченных для удаления.";
 "You kept everything in this session." = "В этой сессии вы оставили всё.";
+"Review selected items before deleting." = "Проверьте выбранные объекты перед удалением.";
 "Review selected items before deleting. Nothing has been deleted yet." = "Проверьте выбранные объекты перед удалением. Пока ничего не удалено.";
 "Big review session" = "Большой просмотр";
 "Clean sweep" = "Всё оставлено";

@@ -6,10 +6,12 @@ final class SwipeSessionViewModel: ObservableObject {
 
     @Published private(set) var currentPhotoIndex = 0
     @Published private(set) var decisions: [SwipeDecision] = []
+    @Published private(set) var viewedPhotoIDs: [String] = []
     @Published var isSessionCompleted = false
 
     init(month: MonthGroup) {
         self.selectedMonth = month
+        rememberCurrentPhotoAsViewed()
     }
 
     var currentPhoto: PhotoAsset? {
@@ -24,16 +26,37 @@ final class SwipeSessionViewModel: ObservableObject {
         decisions.count
     }
 
+    var activeReviewTotalCount: Int {
+        selectedMonth.photos.count - pendingDeletionCount
+    }
+
+    var currentQueuePosition: Int {
+        guard activeReviewTotalCount > 0 else {
+            return 0
+        }
+
+        guard !isSessionCompleted, let currentPhoto else {
+            return activeReviewTotalCount
+        }
+
+        let activePhotos = selectedMonth.photos.filter { !pendingDeletionIDs.contains($0.id) }
+        guard let currentActiveIndex = activePhotos.firstIndex(where: { $0.id == currentPhoto.id }) else {
+            return activeReviewTotalCount
+        }
+
+        return currentActiveIndex + 1
+    }
+
     var totalCount: Int {
         selectedMonth.photos.count
     }
 
     var progressFraction: Double {
-        guard totalCount > 0 else {
+        guard activeReviewTotalCount > 0 else {
             return 0
         }
 
-        return Double(reviewedCount) / Double(totalCount)
+        return Double(currentQueuePosition) / Double(activeReviewTotalCount)
     }
 
     var canUndoLastDecision: Bool {
@@ -46,6 +69,14 @@ final class SwipeSessionViewModel: ObservableObject {
 
     var pendingDeletionCount: Int {
         decisions.filter { $0.action == .pendingDeletion }.count
+    }
+
+    private var pendingDeletionIDs: Set<String> {
+        Set(
+            decisions.compactMap { decision in
+                decision.action == .pendingDeletion ? decision.photoID : nil
+            }
+        )
     }
 
     var pendingDeletionPhotos: [PhotoAsset] {
@@ -67,15 +98,15 @@ final class SwipeSessionViewModel: ObservableObject {
             return L10n.string("0 of 0")
         }
 
-        return L10n.string(format: "%d of %d reviewed", reviewedCount, totalCount)
+        return L10n.string(format: "Photo %d of %d", currentQueuePosition, activeReviewTotalCount)
     }
 
     var encouragementText: String {
-        guard totalCount > 0 else {
+        guard activeReviewTotalCount > 0 else {
             return L10n.string("Ready to review")
         }
 
-        if totalCount - reviewedCount <= 3 && reviewedCount > 0 {
+        if activeReviewTotalCount - currentQueuePosition <= 3 && currentQueuePosition > 0 {
             return L10n.string("Last few items")
         }
 
@@ -110,12 +141,19 @@ final class SwipeSessionViewModel: ObservableObject {
     }
 
     func undoLastDecision() {
-        guard canUndoLastDecision else {
+        guard canUndoLastDecision, let lastDecision = decisions.last else {
             return
         }
 
         decisions.removeLast()
-        currentPhotoIndex = max(currentPhotoIndex - 1, 0)
+        isSessionCompleted = false
+
+        guard let restoredPhotoIndex = selectedMonth.photos.firstIndex(where: { $0.id == lastDecision.photoID }) else {
+            return
+        }
+
+        currentPhotoIndex = restoredPhotoIndex
+        rememberCurrentPhotoAsViewed()
     }
 
     func finishReview() {
@@ -127,17 +165,35 @@ final class SwipeSessionViewModel: ObservableObject {
     }
 
     func moveToNextPhoto() {
-        if currentPhotoIndex + 1 >= selectedMonth.photos.count {
-            isSessionCompleted = true
-        } else {
-            currentPhotoIndex += 1
-        }
+        moveToNextAvailablePhoto(after: currentPhotoIndex)
     }
 
     func reset() {
         currentPhotoIndex = 0
         decisions = []
+        viewedPhotoIDs = []
         isSessionCompleted = false
+        rememberCurrentPhotoAsViewed()
+    }
+
+    func moveToPreviousViewedKeptPhoto() -> Bool {
+        guard !isSessionCompleted,
+              let currentPhoto,
+              let currentHistoryIndex = viewedPhotoIDs.lastIndex(of: currentPhoto.id) else {
+            return false
+        }
+
+        let previousPhotoID = viewedPhotoIDs[..<currentHistoryIndex]
+            .reversed()
+            .first { !pendingDeletionIDs.contains($0) }
+
+        guard let previousPhotoID,
+              let previousPhotoIndex = selectedMonth.photos.firstIndex(where: { $0.id == previousPhotoID }) else {
+            return false
+        }
+
+        currentPhotoIndex = previousPhotoIndex
+        return true
     }
 
     private func recordDecision(_ action: SwipeAction) {
@@ -145,10 +201,32 @@ final class SwipeSessionViewModel: ObservableObject {
             return
         }
 
+        rememberCurrentPhotoAsViewed()
+        decisions.removeAll { $0.photoID == currentPhoto.id }
         decisions.append(
             SwipeDecision(photoID: currentPhoto.id, action: action)
         )
 
-        moveToNextPhoto()
+        moveToNextAvailablePhoto(after: currentPhotoIndex)
+    }
+
+    private func moveToNextAvailablePhoto(after index: Int) {
+        guard let nextPhotoIndex = selectedMonth.photos.indices.first(where: { photoIndex in
+            photoIndex > index && !pendingDeletionIDs.contains(selectedMonth.photos[photoIndex].id)
+        }) else {
+            isSessionCompleted = true
+            return
+        }
+
+        currentPhotoIndex = nextPhotoIndex
+        rememberCurrentPhotoAsViewed()
+    }
+
+    private func rememberCurrentPhotoAsViewed() {
+        guard let currentPhoto, !viewedPhotoIDs.contains(currentPhoto.id) else {
+            return
+        }
+
+        viewedPhotoIDs.append(currentPhoto.id)
     }
 }

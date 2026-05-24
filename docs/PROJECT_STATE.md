@@ -15,9 +15,9 @@ The app starts at `OnboardingScreen`, then routes into cleanup modes and review 
 
 - Photo Library permission flow and permission-aware UI states.
 - Cleanup modes: Monthly Review, All Media, Screenshots, and Videos.
-- Media loading through `PhotoLibraryService`, including grouping by month and filtering screenshots/videos.
-- Swipe session state in `SwipeSessionViewModel`; swipe up marks pending deletion, swipe down keeps, and users can finish review early.
-- Undo, progress count, progress messages, and session-local completion feedback.
+- Media loading through `PhotoLibraryService`, including grouping by creation month, standalone localized month names, and filtering screenshots/videos.
+- Swipe session state in `SwipeSessionViewModel`; swipe up marks pending deletion and removes that item from the active review queue, swipe down keeps, swipe right returns to the previous viewed item that is not pending deletion, and users can finish review early.
+- Viewed photo history, active-queue position progress, undo, progress messages, and session-local completion feedback.
 - Swipe review shows a live pending deletion count derived from session decisions.
 - Summary screen with pending deletion previews and a final delete confirmation alert.
 - Real deletion through `PhotoDeletionService` using PhotoKit change requests.

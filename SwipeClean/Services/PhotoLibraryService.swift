@@ -137,7 +137,7 @@ struct PhotoLibraryService {
 
         let formatter = DateFormatter()
         formatter.locale = L10n.locale
-        return formatter.monthSymbols[month - 1]
+        return formatter.standaloneMonthSymbols[month - 1]
     }
 
     private static func mediaType(for asset: PHAsset) -> MediaType? {

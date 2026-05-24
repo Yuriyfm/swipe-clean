@@ -24,10 +24,6 @@ struct CleanupSummaryScreen: View {
             ScrollView {
                 VStack(spacing: 24) {
                     VStack(spacing: 8) {
-                        Image(systemName: "checklist")
-                            .font(.system(size: 56))
-                            .foregroundStyle(Color.accentColor)
-
                         Text("Session complete")
                             .font(.largeTitle)
                             .fontWeight(.bold)
@@ -43,14 +39,6 @@ struct CleanupSummaryScreen: View {
                             .foregroundStyle(.primary)
                             .multilineTextAlignment(.center)
 
-                        Text(achievementMessage)
-                            .font(.subheadline)
-                            .fontWeight(.semibold)
-                            .foregroundStyle(.primary)
-                            .padding(.horizontal, 12)
-                            .padding(.vertical, 6)
-                            .background(Color.accentColor.opacity(0.12))
-                            .clipShape(Capsule())
                     }
 
                     VStack(spacing: 16) {
@@ -163,15 +151,14 @@ struct CleanupSummaryScreen: View {
                     .background(Color(.tertiarySystemBackground))
                     .clipShape(RoundedRectangle(cornerRadius: 8))
             } else {
-                LazyVGrid(
-                    columns: [
-                        GridItem(.adaptive(minimum: 96), spacing: 8)
-                    ],
-                    spacing: 8
-                ) {
-                    ForEach(summary.pendingDeletionPhotos) { photo in
-                        PendingDeletionThumbnail(photo: photo)
+                ScrollView(.horizontal, showsIndicators: true) {
+                    LazyHStack(spacing: 8) {
+                        ForEach(summary.pendingDeletionPhotos) { photo in
+                            PendingDeletionThumbnail(photo: photo)
+                                .frame(width: 112, height: 112)
+                        }
                     }
+                    .padding(.bottom, 4)
                 }
             }
         }
@@ -187,19 +174,7 @@ struct CleanupSummaryScreen: View {
             return L10n.string("You kept everything in this session.")
         }
 
-        return L10n.string("Review selected items before deleting. Nothing has been deleted yet.")
-    }
-
-    private var achievementMessage: String {
-        if summary.reviewedCount >= 50 {
-            return L10n.string("Big review session")
-        }
-
-        if summary.pendingDeletionCount == 0 {
-            return L10n.string("Clean sweep")
-        }
-
-        return L10n.string("Ready for review")
+        return L10n.string("Review selected items before deleting.")
     }
 
     private var statusMessage: String? {
