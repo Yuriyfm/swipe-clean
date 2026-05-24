@@ -28,13 +28,25 @@ struct CleanupModesScreen: View {
             }
         }
         .navigationTitle("Cleanup Mode")
-        .navigationDestination(item: $activeSession) { session in
-            SwipeSessionScreen(
-                month: session,
-                onDeletionCompleted: {
-                    activeSession = nil
+        .toolbar {
+            ToolbarItem(placement: .topBarTrailing) {
+                NavigationLink {
+                    SettingsScreen()
+                } label: {
+                    Image(systemName: "gearshape")
+                        .accessibilityLabel("Settings")
                 }
-            )
+            }
+        }
+        .navigationDestination(isPresented: isShowingSession) {
+            if let activeSession {
+                SwipeSessionScreen(
+                    month: activeSession,
+                    onDeletionCompleted: {
+                        self.activeSession = nil
+                    }
+                )
+            }
         }
         .alert("Nothing to Review", isPresented: isShowingEmptyAlert) {
             Button("OK", role: .cancel) {
@@ -69,6 +81,17 @@ struct CleanupModesScreen: View {
             set: { isShowing in
                 if !isShowing {
                     errorMessage = nil
+                }
+            }
+        )
+    }
+
+    private var isShowingSession: Binding<Bool> {
+        Binding(
+            get: { activeSession != nil },
+            set: { isShowing in
+                if !isShowing {
+                    activeSession = nil
                 }
             }
         )
@@ -194,7 +217,7 @@ private struct CleanupModeRow: View {
         HStack(spacing: 16) {
             Image(systemName: mode.systemImageName)
                 .font(.title2)
-                .foregroundStyle(.blue)
+                .foregroundStyle(Color.accentColor)
                 .frame(width: 36)
 
             VStack(alignment: .leading, spacing: 4) {

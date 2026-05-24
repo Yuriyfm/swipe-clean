@@ -36,7 +36,7 @@ struct SwipeSessionScreen: View {
                         Text(viewModel.encouragementText)
                             .font(.subheadline)
                             .fontWeight(.semibold)
-                            .foregroundStyle(.blue)
+                            .foregroundStyle(Color.accentColor)
                     }
 
                     ProgressView(value: viewModel.progressFraction)

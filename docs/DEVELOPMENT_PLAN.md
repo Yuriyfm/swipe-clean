@@ -130,5 +130,9 @@ Not included:
 - Limited library explanation
 - Loading states
 - Error states
+- System, Light, and Dark appearance setting
+- Dark mode and light mode readability checks for all main screens
 - Basic accessibility
 - Basic tests for pure logic
+
+Appearance settings must not affect media safety or deletion flow. Deletion remains limited to the final confirmation flow and PhotoKit deletion service.

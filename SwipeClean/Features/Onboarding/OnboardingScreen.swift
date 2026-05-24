@@ -10,7 +10,7 @@ struct OnboardingScreen: View {
 
                 Image(systemName: "photo.on.rectangle.angled")
                     .font(.system(size: 72))
-                    .foregroundStyle(.blue)
+                    .foregroundStyle(Color.accentColor)
 
                 VStack(spacing: 12) {
                     Text("SwipeClean")

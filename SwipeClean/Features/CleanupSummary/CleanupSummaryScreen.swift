@@ -26,7 +26,7 @@ struct CleanupSummaryScreen: View {
                     VStack(spacing: 8) {
                         Image(systemName: "checklist")
                             .font(.system(size: 56))
-                            .foregroundStyle(.blue)
+                            .foregroundStyle(Color.accentColor)
 
                         Text("Session complete")
                             .font(.largeTitle)
@@ -46,10 +46,10 @@ struct CleanupSummaryScreen: View {
                         Text(achievementMessage)
                             .font(.subheadline)
                             .fontWeight(.semibold)
-                            .foregroundStyle(.blue)
+                            .foregroundStyle(Color.accentColor)
                             .padding(.horizontal, 12)
                             .padding(.vertical, 6)
-                            .background(Color.blue.opacity(0.12))
+                            .background(Color.accentColor.opacity(0.12))
                             .clipShape(Capsule())
                     }
 

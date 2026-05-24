@@ -38,6 +38,7 @@ Included:
 - Light progress and session-local completion feedback
 - Photo and video thumbnail previews
 - Screenshots-only and videos-only review modes
+- System, Light, and Dark appearance setting
 
 Not included:
 - Cloud sync
@@ -58,3 +59,13 @@ SwipeClean uses calm session feedback:
 - session-local achievement-style messages such as "Clean sweep", "Ready for review", and "Big review session"
 
 These messages are not persisted. The app does not use streaks, points, daily challenges, notifications, or addictive mechanics.
+
+## Appearance
+
+SwipeClean supports three app appearance settings:
+
+- System: follows the current iOS appearance
+- Light: forces light appearance
+- Dark: forces dark appearance
+
+Theme selection is a visual preference only. It does not change Photo Library permissions, media loading, swipe decisions, deletion confirmation, or PhotoKit deletion behavior.

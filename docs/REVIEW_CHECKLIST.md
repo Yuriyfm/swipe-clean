@@ -27,6 +27,9 @@ Before accepting Codex changes:
 - Is there a clear cancel path?
 - Is session progress readable without relying only on color?
 - Does undo update reviewed count and progress correctly?
+- Can the user choose System, Light, and Dark appearance from Settings?
+- Are all main screens readable in both Light and Dark appearance?
+- Does theme selection leave media safety and deletion flow unchanged?
 
 ## Code
 

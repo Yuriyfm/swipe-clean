@@ -100,7 +100,7 @@ private struct MonthRow: View {
         HStack(spacing: 16) {
             Image(systemName: "calendar")
                 .font(.title2)
-                .foregroundStyle(.blue)
+                .foregroundStyle(Color.accentColor)
                 .frame(width: 36)
 
             VStack(alignment: .leading, spacing: 4) {
