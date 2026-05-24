@@ -30,6 +30,7 @@ struct OnboardingScreen: View {
             .onReceive(NotificationCenter.default.publisher(for: UIApplication.didBecomeActiveNotification)) { _ in
                 permissionViewModel.checkCurrentStatus()
             }
+            .background(Color(.secondarySystemBackground).ignoresSafeArea())
         }
     }
 
@@ -41,7 +42,7 @@ struct OnboardingScreen: View {
 
             Text("Review photos and videos by cleanup mode. Keep the ones you want and mark unwanted items for a later confirmation step.")
                 .font(.body)
-                .foregroundStyle(.secondary)
+                .foregroundStyle(.primary)
                 .multilineTextAlignment(.center)
         }
     }
@@ -80,19 +81,19 @@ struct OnboardingScreen: View {
 
             Text(permissionViewModel.statusMessage)
                 .font(.callout)
-                .foregroundStyle(.secondary)
+                .foregroundStyle(.primary)
                 .multilineTextAlignment(.center)
         }
         .padding()
         .frame(maxWidth: .infinity)
-        .background(Color(.secondarySystemBackground))
+        .background(Color(.tertiarySystemBackground))
         .clipShape(RoundedRectangle(cornerRadius: 8))
     }
 
     private func subtleStatusNote(_ text: String) -> some View {
         Text(LocalizedStringKey(text))
             .font(.callout)
-            .foregroundStyle(.secondary)
+            .foregroundStyle(.primary)
             .multilineTextAlignment(.center)
     }
 

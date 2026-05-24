@@ -15,7 +15,7 @@
 "Review photos and videos by cleanup mode. Keep the ones you want and mark unwanted items for a later confirmation step." = "Просматривайте фото и видео по режимам очистки. Оставляйте нужное и отмечайте лишнее для подтверждения позже.";
 "Photo access is enabled. Nothing will be deleted without confirmation." = "Доступ к фото включён. Ничего не будет удалено без подтверждения.";
 "Limited photo access is enabled. SwipeClean can review only the media you selected." = "Включён ограниченный доступ. SwipeClean может просматривать только выбранные вами медиа.";
-"Manage Selected Photos" = "Изменить выбранные фото";
+"Manage Selected Photos" = "Изменить в настройках";
 "Allow Photo Access" = "Разрешить доступ к фото";
 "Start Cleanup" = "Начать очистку";
 "Open Settings" = "Открыть настройки";
@@ -36,7 +36,7 @@
 
 "Cleanup Mode" = "Режим очистки";
 "Limited photo access" = "Ограниченный доступ к фото";
-"SwipeClean can only review the photos and videos you selected. You can update that selection at any time." = "SwipeClean может просматривать только выбранные вами фото и видео. Этот список можно изменить в любой момент.";
+"SwipeClean can only review the photos and videos you selected. You can update that selection in Settings." = "SwipeClean может просматривать только выбранные вами фото и видео. Этот список можно изменить в настройках.";
 "Photo access needed" = "Нужен доступ к фото";
 "SwipeClean needs photo library access to review media. Open Settings and allow access before starting a cleanup mode." = "SwipeClean нужен доступ к медиатеке для просмотра медиа. Откройте настройки и разрешите доступ перед началом очистки.";
 "Nothing to Review" = "Нечего просматривать";
@@ -54,7 +54,7 @@
 "No Accessible Media" = "Нет доступных медиа";
 "No Screenshots" = "Нет скриншотов";
 "No Videos" = "Нет видео";
-" With limited access, only selected media is available. You can manage your selected photos and videos here." = " При ограниченном доступе доступны только выбранные медиа. Здесь можно изменить выбранные фото и видео.";
+" With limited access, only selected media is available. You can manage your selected photos and videos in Settings." = " При ограниченном доступе доступны только выбранные медиа. Выбранные фото и видео можно изменить в настройках.";
 "SwipeClean could not find accessible media to group by month.%@" = "SwipeClean не нашёл доступные медиа для группировки по месяцам.%@";
 "SwipeClean could not find accessible photos or videos.%@" = "SwipeClean не нашёл доступные фото или видео.%@";
 "SwipeClean could not find accessible screenshots.%@" = "SwipeClean не нашёл доступные скриншоты.%@";

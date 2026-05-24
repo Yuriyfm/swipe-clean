@@ -16,8 +16,10 @@ struct SettingsScreen: View {
                 .pickerStyle(.segmented)
             } header: {
                 Text("Theme")
+                    .foregroundStyle(.primary)
             } footer: {
                 Text("System follows your iOS appearance. Light and Dark force SwipeClean to use that appearance.")
+                    .foregroundStyle(.primary)
             }
 
             Section {
@@ -30,12 +32,16 @@ struct SettingsScreen: View {
                 .pickerStyle(.segmented)
             } header: {
                 Text("Language")
+                    .foregroundStyle(.primary)
             } footer: {
                 Text("System follows your iOS language. English and Russian force SwipeClean to use that language.")
+                    .foregroundStyle(.primary)
             }
         }
         .navigationTitle("Settings")
         .navigationBarTitleDisplayMode(.inline)
+        .scrollContentBackground(.hidden)
+        .background(Color(.secondarySystemBackground).ignoresSafeArea())
     }
 }
 

@@ -10,6 +10,8 @@ struct SwipeCleanApp: App {
             OnboardingScreen()
                 .preferredColorScheme(selectedTheme.colorScheme)
                 .environment(\.locale, selectedLocale)
+                .tint(Color(red: 0.34, green: 0.50, blue: 0.56))
+                .background(Color(.secondarySystemBackground).ignoresSafeArea())
         }
     }
 

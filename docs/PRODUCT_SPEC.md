@@ -37,6 +37,7 @@ Included:
 - Safe deletion request
 - Light progress and session-local completion feedback
 - Photo and video thumbnail previews
+- Swipe cards that adapt to photo and video aspect ratio
 - Screenshots-only and videos-only review modes
 - System, Light, and Dark appearance setting
 - English and Russian localization with a language setting
@@ -87,6 +88,6 @@ SwipeClean explains photo library access states clearly:
 
 - Denied or restricted access shows a helpful message and an Open Settings action.
 - Limited access is allowed and explained as a non-blocking state.
-- Users with limited access can manage selected photos when iOS supports the limited library picker.
+- Users with limited access can open Settings to manage selected photos.
 - Empty cleanup modes show mode-specific messages for no accessible media, no screenshots, or no videos.
 - If deletion fails because full access is required, pending deletion previews remain visible and the user can open Settings or retry.

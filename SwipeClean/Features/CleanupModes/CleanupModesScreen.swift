@@ -18,15 +18,19 @@ struct CleanupModesScreen: View {
                     VStack(alignment: .leading, spacing: 8) {
                         Label("Limited photo access", systemImage: "photo.badge.checkmark")
                             .font(.headline)
+                            .foregroundStyle(.primary)
 
-                        Text("SwipeClean can only review the photos and videos you selected. You can update that selection at any time.")
+                        Text("SwipeClean can only review the photos and videos you selected. You can update that selection in Settings.")
                             .font(.callout)
-                            .foregroundStyle(.secondary)
+                            .foregroundStyle(.primary)
 
                         Button("Manage Selected Photos") {
                             manageLimitedAccess()
                         }
+                        .foregroundStyle(.primary)
+                        .buttonStyle(.bordered)
                     }
+                    .foregroundStyle(.primary)
                     .padding(.vertical, 4)
                 }
             }
@@ -36,15 +40,19 @@ struct CleanupModesScreen: View {
                     VStack(alignment: .leading, spacing: 8) {
                         Label("Photo access needed", systemImage: "exclamationmark.triangle")
                             .font(.headline)
+                            .foregroundStyle(.primary)
 
                         Text("SwipeClean needs photo library access to review media. Open Settings and allow access before starting a cleanup mode.")
                             .font(.callout)
-                            .foregroundStyle(.secondary)
+                            .foregroundStyle(.primary)
 
                         Button("Open Settings") {
                             PhotoLibraryAccessHelper.openAppSettings()
                         }
+                        .foregroundStyle(.primary)
+                        .buttonStyle(.bordered)
                     }
+                    .foregroundStyle(.primary)
                     .padding(.vertical, 4)
                 }
             }
@@ -55,6 +63,7 @@ struct CleanupModesScreen: View {
                 } label: {
                     CleanupModeRow(mode: .monthlyReview, isLoading: false)
                 }
+                .foregroundStyle(.primary)
                 .disabled(loadingMode != nil || !canLoadMedia)
 
                 ForEach(CleanupMode.flatModes) { mode in
@@ -63,11 +72,15 @@ struct CleanupModesScreen: View {
                     } label: {
                         CleanupModeRow(mode: mode, isLoading: loadingMode == mode)
                     }
+                    .buttonStyle(.plain)
+                    .foregroundStyle(.primary)
                     .disabled(loadingMode != nil || !canLoadMedia)
                 }
             }
         }
         .navigationTitle("Cleanup Mode")
+        .scrollContentBackground(.hidden)
+        .background(Color(.secondarySystemBackground).ignoresSafeArea())
         .toolbar {
             ToolbarItem(placement: .topBarTrailing) {
                 NavigationLink {
@@ -205,7 +218,7 @@ struct CleanupModesScreen: View {
 
     private func manageLimitedAccess() {
         Task { @MainActor in
-            PhotoLibraryAccessHelper.presentLimitedLibraryPicker()
+            PhotoLibraryAccessHelper.openPhotoAccessSettings()
             checkPermissionStatus()
         }
     }
@@ -289,7 +302,7 @@ private enum CleanupMode: String, Identifiable, CaseIterable {
     }
 
     func emptyMessage(isLimitedAccess: Bool) -> String {
-        let limitedAccessNote = isLimitedAccess ? L10n.string(" With limited access, only selected media is available. You can manage your selected photos and videos here.") : ""
+        let limitedAccessNote = isLimitedAccess ? L10n.string(" With limited access, only selected media is available. You can manage your selected photos and videos in Settings.") : ""
 
         switch self {
         case .monthlyReview:
@@ -312,7 +325,7 @@ private struct CleanupModeRow: View {
         HStack(spacing: 16) {
             Image(systemName: mode.systemImageName)
                 .font(.title2)
-                .foregroundStyle(Color.accentColor)
+                .foregroundStyle(.primary)
                 .frame(width: 36)
 
             VStack(alignment: .leading, spacing: 4) {
@@ -322,7 +335,7 @@ private struct CleanupModeRow: View {
 
                 Text(mode.description)
                     .font(.subheadline)
-                    .foregroundStyle(.secondary)
+                    .foregroundStyle(.primary)
             }
 
             Spacer()
@@ -331,6 +344,7 @@ private struct CleanupModeRow: View {
                 ProgressView()
             }
         }
+        .foregroundStyle(.primary)
         .padding(.vertical, 8)
     }
 }

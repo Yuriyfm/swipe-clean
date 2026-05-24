@@ -74,7 +74,7 @@ final class PhotoLibraryPermissionViewModel: ObservableObject {
 
     @MainActor
     func manageLimitedAccess() {
-        PhotoLibraryAccessHelper.presentLimitedLibraryPicker()
+        PhotoLibraryAccessHelper.openPhotoAccessSettings()
         checkCurrentStatus()
     }
 }

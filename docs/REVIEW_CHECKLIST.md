@@ -18,7 +18,7 @@ Before accepting Codex changes:
 - Are permission states handled?
 - Does denied or restricted access show a clear Open Settings action?
 - Is limited access explained without blocking cleanup?
-- Can limited-access users manage selected photos when supported?
+- Can limited-access users open Settings to manage selected photos?
 - Are videos shown as thumbnails without full-size media preloading?
 - Do all cleanup modes use the same final deletion confirmation flow?
 - Are gamification messages session-local and free of streaks, points, daily challenges, or push notifications?

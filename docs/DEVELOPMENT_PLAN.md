@@ -70,6 +70,7 @@ Goal:
 Goal:
 
 - Show photos and videos one at a time
+- Size the swipe card from media pixel dimensions so portrait, landscape, square, very wide, and very tall media remain usable
 - Swipe down = keep
 - Swipe up = mark as pending deletion
 - Videos are previewed as thumbnails, not played
@@ -129,7 +130,7 @@ Not included:
 - Permission denied state
 - Limited library explanation
 - Open Settings action for denied, restricted, or full-access-required states
-- Limited library selection management where iOS supports it
+- Settings access for limited library selection management
 - Mode-specific empty states for Monthly Review, All Media, Screenshots, and Videos
 - Loading states
 - Error states

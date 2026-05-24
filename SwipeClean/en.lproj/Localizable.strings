@@ -15,7 +15,7 @@
 "Review photos and videos by cleanup mode. Keep the ones you want and mark unwanted items for a later confirmation step." = "Review photos and videos by cleanup mode. Keep the ones you want and mark unwanted items for a later confirmation step.";
 "Photo access is enabled. Nothing will be deleted without confirmation." = "Photo access is enabled. Nothing will be deleted without confirmation.";
 "Limited photo access is enabled. SwipeClean can review only the media you selected." = "Limited photo access is enabled. SwipeClean can review only the media you selected.";
-"Manage Selected Photos" = "Manage Selected Photos";
+"Manage Selected Photos" = "Manage in Settings";
 "Allow Photo Access" = "Allow Photo Access";
 "Start Cleanup" = "Start Cleanup";
 "Open Settings" = "Open Settings";
@@ -36,7 +36,7 @@
 
 "Cleanup Mode" = "Cleanup Mode";
 "Limited photo access" = "Limited photo access";
-"SwipeClean can only review the photos and videos you selected. You can update that selection at any time." = "SwipeClean can only review the photos and videos you selected. You can update that selection at any time.";
+"SwipeClean can only review the photos and videos you selected. You can update that selection in Settings." = "SwipeClean can only review the photos and videos you selected. You can update that selection in Settings.";
 "Photo access needed" = "Photo access needed";
 "SwipeClean needs photo library access to review media. Open Settings and allow access before starting a cleanup mode." = "SwipeClean needs photo library access to review media. Open Settings and allow access before starting a cleanup mode.";
 "Settings" = "Settings";
@@ -55,7 +55,7 @@
 "No Accessible Media" = "No Accessible Media";
 "No Screenshots" = "No Screenshots";
 "No Videos" = "No Videos";
-" With limited access, only selected media is available. You can manage your selected photos and videos here." = " With limited access, only selected media is available. You can manage your selected photos and videos here.";
+" With limited access, only selected media is available. You can manage your selected photos and videos in Settings." = " With limited access, only selected media is available. You can manage your selected photos and videos in Settings.";
 "SwipeClean could not find accessible media to group by month.%@" = "SwipeClean could not find accessible media to group by month.%@";
 "SwipeClean could not find accessible photos or videos.%@" = "SwipeClean could not find accessible photos or videos.%@";
 "SwipeClean could not find accessible screenshots.%@" = "SwipeClean could not find accessible screenshots.%@";

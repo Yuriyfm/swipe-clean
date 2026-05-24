@@ -38,6 +38,7 @@ struct MonthListScreen: View {
         .onReceive(NotificationCenter.default.publisher(for: UIApplication.didBecomeActiveNotification)) { _ in
             permissionStatus = PHPhotoLibrary.authorizationStatus(for: .readWrite)
         }
+        .background(Color(.secondarySystemBackground).ignoresSafeArea())
     }
 
     private var monthList: some View {
@@ -55,6 +56,8 @@ struct MonthListScreen: View {
                 MonthRow(month: month)
             }
         }
+        .scrollContentBackground(.hidden)
+        .background(Color(.secondarySystemBackground))
     }
 
     private var emptyStateView: some View {
@@ -69,7 +72,7 @@ struct MonthListScreen: View {
 
             Text(emptyStateMessage)
                 .font(.callout)
-                .foregroundStyle(.secondary)
+                .foregroundStyle(.primary)
                 .multilineTextAlignment(.center)
 
             if permissionStatus == .limited {
@@ -91,7 +94,7 @@ struct MonthListScreen: View {
         VStack(spacing: 16) {
             Image(systemName: "exclamationmark.triangle")
                 .font(.system(size: 48))
-                .foregroundStyle(.orange)
+                .foregroundStyle(Color(red: 0.72, green: 0.48, blue: 0.18))
 
             Text("Could Not Load Media")
                 .font(.title2)
@@ -99,7 +102,7 @@ struct MonthListScreen: View {
 
             Text(message)
                 .font(.callout)
-                .foregroundStyle(.secondary)
+                .foregroundStyle(.primary)
                 .multilineTextAlignment(.center)
 
             if permissionStatus == .denied || permissionStatus == .restricted {
@@ -155,7 +158,7 @@ struct MonthListScreen: View {
 
     private func manageLimitedAccess() {
         Task { @MainActor in
-            PhotoLibraryAccessHelper.presentLimitedLibraryPicker()
+            PhotoLibraryAccessHelper.openPhotoAccessSettings()
             permissionStatus = PHPhotoLibrary.authorizationStatus(for: .readWrite)
             await loadMonths()
         }
@@ -185,14 +188,14 @@ private struct MonthRow: View {
 
                 Text(L10n.string(format: "%d accessible items", month.photoCount))
                     .font(.subheadline)
-                    .foregroundStyle(.secondary)
+                    .foregroundStyle(.primary)
             }
 
             Spacer()
 
             Text("\(month.photoCount)")
                 .font(.subheadline)
-                .foregroundStyle(.secondary)
+                .foregroundStyle(.primary)
         }
         .padding(.vertical, 8)
     }

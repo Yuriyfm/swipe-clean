@@ -29,14 +29,14 @@ struct SwipeSessionScreen: View {
                     HStack {
                         Text(viewModel.progressText)
                             .font(.subheadline)
-                            .foregroundStyle(.secondary)
+                            .foregroundStyle(.primary)
 
                         Spacer()
 
                         Text(viewModel.encouragementText)
                             .font(.subheadline)
                             .fontWeight(.semibold)
-                            .foregroundStyle(Color.accentColor)
+                            .foregroundStyle(.primary)
                     }
 
                     ProgressView(value: viewModel.progressFraction)
@@ -53,7 +53,7 @@ struct SwipeSessionScreen: View {
                     SwipeHintLabel(
                         title: "Delete",
                         systemImageName: "trash",
-                        color: .red,
+                        color: deleteColor,
                         opacity: deleteHintOpacity
                     )
                     .frame(maxHeight: .infinity, alignment: .top)
@@ -61,7 +61,7 @@ struct SwipeSessionScreen: View {
                     SwipeHintLabel(
                         title: "Keep",
                         systemImageName: "checkmark",
-                        color: .green,
+                        color: keepColor,
                         opacity: keepHintOpacity
                     )
                     .frame(maxHeight: .infinity, alignment: .bottom)
@@ -76,7 +76,8 @@ struct SwipeSessionScreen: View {
                         .gesture(cardDragGesture)
                         .animation(.spring(response: 0.28, dampingFraction: 0.82), value: cardOffset)
                 }
-                    .transition(.opacity)
+                .frame(height: 420)
+                .transition(.opacity)
             } else if viewModel.totalCount == 0 {
                 VStack(spacing: 12) {
                     Image(systemName: "photo.on.rectangle")
@@ -89,7 +90,7 @@ struct SwipeSessionScreen: View {
 
                     Text("This session does not contain any accessible media.")
                         .font(.callout)
-                        .foregroundStyle(.secondary)
+                        .foregroundStyle(.primary)
                         .multilineTextAlignment(.center)
                 }
             }
@@ -113,7 +114,7 @@ struct SwipeSessionScreen: View {
                         .frame(maxWidth: .infinity)
                 }
                 .buttonStyle(.borderedProminent)
-                .tint(.green)
+                .tint(keepColor)
                 .disabled(viewModel.currentPhoto == nil || isAnimatingCardOut)
 
                 Button {
@@ -123,11 +124,12 @@ struct SwipeSessionScreen: View {
                         .frame(maxWidth: .infinity)
                 }
                 .buttonStyle(.borderedProminent)
-                .tint(.red)
+                .tint(deleteColor)
                 .disabled(viewModel.currentPhoto == nil || isAnimatingCardOut)
             }
         }
         .padding(24)
+        .background(Color(.secondarySystemBackground).ignoresSafeArea())
         .navigationTitle("Review")
         .navigationBarTitleDisplayMode(.inline)
         .onChange(of: viewModel.isSessionCompleted) { _, isCompleted in
@@ -188,6 +190,14 @@ struct SwipeSessionScreen: View {
 
     private var keepHintOpacity: Double {
         min(max(Double(cardOffset.height / swipeThreshold), 0), 1)
+    }
+
+    private var keepColor: Color {
+        Color(red: 0.30, green: 0.52, blue: 0.36)
+    }
+
+    private var deleteColor: Color {
+        Color(red: 0.70, green: 0.28, blue: 0.28)
     }
 
     private func handleDragEnd(_ value: DragGesture.Value) {
@@ -305,45 +315,82 @@ private struct PhotoCard: View {
     let thumbnailState: ThumbnailState
 
     var body: some View {
-        ZStack {
-            RoundedRectangle(cornerRadius: 24)
-                .fill(photo.placeholderColor)
+        GeometryReader { geometry in
+            let cardSize = size(
+                for: photo.aspectRatio,
+                in: geometry.size
+            )
 
-            switch thumbnailState {
-            case .idle, .loading:
-                VStack(spacing: 16) {
-                    ProgressView()
-                        .tint(.white)
+            ZStack {
+                RoundedRectangle(cornerRadius: 24)
+                    .fill(Color(.tertiarySystemBackground))
 
-                    Text("Loading Preview")
-                        .font(.headline)
+                switch thumbnailState {
+                case .idle, .loading:
+                    VStack(spacing: 16) {
+                        ProgressView()
+
+                        Text("Loading Preview")
+                            .font(.headline)
+                            .foregroundStyle(.primary)
+                    }
+                case .loaded(let image):
+                    Image(uiImage: image)
+                        .resizable()
+                        .scaledToFit()
+                        .frame(width: cardSize.width, height: cardSize.height)
+                case .failed:
+                    VStack(spacing: 16) {
+                        Image(systemName: photo.systemImageName)
+                            .font(.system(size: 72))
+
+                        Text(photo.title)
+                            .font(.title3)
+                            .fontWeight(.semibold)
+                    }
+                    .foregroundStyle(.primary)
                 }
-                .foregroundStyle(.white)
-            case .loaded(let image):
-                Image(uiImage: image)
-                    .resizable()
-                    .scaledToFit()
-            case .failed:
-                VStack(spacing: 16) {
-                    Image(systemName: photo.systemImageName)
-                        .font(.system(size: 72))
 
-                    Text(photo.title)
-                        .font(.title3)
-                        .fontWeight(.semibold)
+                if photo.mediaType == .video {
+                    MediaTypeBadge()
+                        .padding(12)
+                        .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topTrailing)
                 }
-                .foregroundStyle(.white)
             }
-
-            if photo.mediaType == .video {
-                MediaTypeBadge()
-                    .padding(12)
-                    .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topTrailing)
+            .frame(width: cardSize.width, height: cardSize.height)
+            .clipShape(RoundedRectangle(cornerRadius: 24))
+            .overlay {
+                RoundedRectangle(cornerRadius: 24)
+                    .strokeBorder(Color.primary.opacity(0.10), lineWidth: 1)
             }
+            .contentShape(RoundedRectangle(cornerRadius: 24))
+            .shadow(color: .black.opacity(0.16), radius: 10, y: 4)
+            .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .center)
         }
-        .aspectRatio(0.75, contentMode: .fit)
-        .clipShape(RoundedRectangle(cornerRadius: 24))
-        .shadow(radius: 12)
+        .frame(maxWidth: .infinity)
+        .frame(height: 420)
+    }
+
+    private func size(for rawAspectRatio: Double, in availableSize: CGSize) -> CGSize {
+        let aspectRatio = min(max(rawAspectRatio, 0.45), 2.4)
+        let maxWidth = min(availableSize.width, 340)
+        let maxHeight = min(availableSize.height, 420)
+        let minHeight: CGFloat = 160
+
+        var width = maxWidth
+        var height = width / aspectRatio
+
+        if height > maxHeight {
+            height = maxHeight
+            width = height * aspectRatio
+        }
+
+        if height < minHeight {
+            height = minHeight
+            width = min(maxWidth, height * aspectRatio)
+        }
+
+        return CGSize(width: width, height: height)
     }
 }
 
@@ -354,9 +401,13 @@ private struct MediaTypeBadge: View {
             .fontWeight(.semibold)
             .padding(.horizontal, 10)
             .padding(.vertical, 6)
-            .foregroundStyle(.white)
-            .background(.black.opacity(0.65))
+            .foregroundStyle(.primary)
+            .background(Color(.systemBackground).opacity(0.82))
             .clipShape(Capsule())
+            .overlay {
+                Capsule()
+                    .strokeBorder(Color.primary.opacity(0.12), lineWidth: 1)
+            }
     }
 }
 
@@ -369,7 +420,7 @@ private struct SwipeHintLabel: View {
     var body: some View {
         Label(LocalizedStringKey(title), systemImage: systemImageName)
             .font(.headline)
-            .foregroundStyle(color)
+            .foregroundStyle(.primary)
             .padding(.horizontal, 16)
             .padding(.vertical, 10)
             .background(color.opacity(0.12))

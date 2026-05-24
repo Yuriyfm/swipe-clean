@@ -67,6 +67,8 @@ struct PhotoLibraryService {
                             creationDate: asset.creationDate,
                             mediaType: mediaType,
                             duration: mediaType == .video ? asset.duration : nil,
+                            pixelWidth: asset.pixelWidth,
+                            pixelHeight: asset.pixelHeight,
                             title: Self.photoTitle(for: asset),
                             systemImageName: mediaType.systemImageName,
                             placeholderColor: mediaType.placeholderColor
@@ -206,9 +208,9 @@ private extension MediaType {
     var placeholderColor: Color {
         switch self {
         case .image:
-            return .blue.opacity(0.75)
+            return Color(red: 0.34, green: 0.50, blue: 0.56).opacity(0.55)
         case .video:
-            return .purple.opacity(0.75)
+            return Color(red: 0.44, green: 0.38, blue: 0.54).opacity(0.55)
         }
     }
 }

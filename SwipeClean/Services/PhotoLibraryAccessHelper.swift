@@ -1,4 +1,3 @@
-import Photos
 import UIKit
 
 enum PhotoLibraryAccessHelper {
@@ -11,20 +10,7 @@ enum PhotoLibraryAccessHelper {
     }
 
     @MainActor
-    static func presentLimitedLibraryPicker() {
-        guard let viewController = rootViewController else {
-            return
-        }
-
-        PHPhotoLibrary.shared().presentLimitedLibraryPicker(from: viewController)
-    }
-
-    @MainActor
-    private static var rootViewController: UIViewController? {
-        UIApplication.shared.connectedScenes
-            .compactMap { $0 as? UIWindowScene }
-            .flatMap(\.windows)
-            .first { $0.isKeyWindow }?
-            .rootViewController
+    static func openPhotoAccessSettings() {
+        openAppSettings()
     }
 }

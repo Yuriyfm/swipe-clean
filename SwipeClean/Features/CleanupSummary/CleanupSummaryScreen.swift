@@ -35,18 +35,18 @@ struct CleanupSummaryScreen: View {
 
                         Text(summary.sessionTitle)
                             .font(.headline)
-                            .foregroundStyle(.secondary)
+                            .foregroundStyle(.primary)
                             .multilineTextAlignment(.center)
 
                         Text(completionMessage)
                             .font(.callout)
-                            .foregroundStyle(.secondary)
+                            .foregroundStyle(.primary)
                             .multilineTextAlignment(.center)
 
                         Text(achievementMessage)
                             .font(.subheadline)
                             .fontWeight(.semibold)
-                            .foregroundStyle(Color.accentColor)
+                            .foregroundStyle(.primary)
                             .padding(.horizontal, 12)
                             .padding(.vertical, 6)
                             .background(Color.accentColor.opacity(0.12))
@@ -59,7 +59,7 @@ struct CleanupSummaryScreen: View {
                         SummaryRow(title: "Pending deletion", value: summary.pendingDeletionCount)
                     }
                     .padding()
-                    .background(Color(.secondarySystemBackground))
+                    .background(Color(.tertiarySystemBackground))
                     .clipShape(RoundedRectangle(cornerRadius: 8))
 
                     pendingDeletionSection
@@ -98,7 +98,7 @@ struct CleanupSummaryScreen: View {
                         }
                     }
                     .buttonStyle(.borderedProminent)
-                    .tint(.red)
+                    .tint(Color(red: 0.70, green: 0.28, blue: 0.28))
                     .disabled(!canConfirmDeletion)
                 }
 
@@ -128,6 +128,7 @@ struct CleanupSummaryScreen: View {
             }
         }
         .padding(24)
+        .background(Color(.secondarySystemBackground).ignoresSafeArea())
         .navigationTitle("Summary")
         .navigationBarTitleDisplayMode(.inline)
         .interactiveDismissDisabled(deletionState == .deleting)
@@ -150,15 +151,15 @@ struct CleanupSummaryScreen: View {
 
             Text(LocalizedStringKey(summary.pendingDeletionPhotos.isEmpty ? "You kept everything in this session." : "Nothing has been deleted yet."))
                 .font(.callout)
-                .foregroundStyle(.secondary)
+                .foregroundStyle(.primary)
 
             if summary.pendingDeletionPhotos.isEmpty {
                 Text("No items marked for deletion.")
                     .font(.callout)
-                    .foregroundStyle(.secondary)
+                    .foregroundStyle(.primary)
                     .frame(maxWidth: .infinity, alignment: .leading)
                     .padding()
-                    .background(Color(.secondarySystemBackground))
+                    .background(Color(.tertiarySystemBackground))
                     .clipShape(RoundedRectangle(cornerRadius: 8))
             } else {
                 LazyVGrid(
@@ -220,9 +221,9 @@ struct CleanupSummaryScreen: View {
     private var statusMessageColor: Color {
         switch deletionState {
         case .failure(_, _):
-            return .red
+            return .primary
         default:
-            return .secondary
+            return .primary
         }
     }
 
@@ -304,7 +305,7 @@ private struct SummaryRow: View {
     var body: some View {
         HStack {
             Text(LocalizedStringKey(title))
-                .foregroundStyle(.secondary)
+                .foregroundStyle(.primary)
 
             Spacer()
 
@@ -393,9 +394,13 @@ private struct PendingDeletionThumbnail: View {
                     .fontWeight(.semibold)
                     .padding(.horizontal, 8)
                     .padding(.vertical, 4)
-                    .foregroundStyle(.white)
-                    .background(.black.opacity(0.65))
+                    .foregroundStyle(.primary)
+                    .background(Color(.systemBackground).opacity(0.82))
                     .clipShape(Capsule())
+                    .overlay {
+                        Capsule()
+                            .strokeBorder(Color.primary.opacity(0.12), lineWidth: 1)
+                    }
                     .padding(6)
                     .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topTrailing)
             }
